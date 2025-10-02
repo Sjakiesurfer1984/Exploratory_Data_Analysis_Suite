@@ -56,7 +56,8 @@ class Visualizer:
         """
         return self._plot_cache
 
-    def _cache_plot(self):
+
+    def _save_plot_to_cache(self):
         """
         Saves the current matplotlib figure to an in-memory binary buffer.
         
@@ -78,10 +79,6 @@ class Visualizer:
         
         # Add the completed image buffer to our cache list.
         self._plot_cache.append(img_buffer)
-        
-        # It's good practice to close the figure after saving. This frees up memory,
-        # which is vital when generating many plots in a loop.
-        plt.close()
 
     def plot_distribution(self, column_names: Union[str, List[str]]):
         """
@@ -123,9 +120,9 @@ class Visualizer:
             plt.ylabel('Count' if self._df[original_col_name].dtype in ['int64', 'float64'] else '')
             
             # Before displaying the plot, save a copy to our cache for later use.
-            self._cache_plot()
-            # Finally, display the plot in the notebook output cell.
-            plt.show()
+            self._save_plot_to_cache()  # Step 1: Save the plot to our report cache
+            plt.show()                  # Step 2: Display the plot in the notebook
+            plt.close()                 # Step 3: Close the figure to free up memory
 
     def plot_scatter(self, x_col: str, y_col: str):
         """Creates a scatter plot to visualise the relationship between two numerical columns."""
@@ -136,14 +133,27 @@ class Visualizer:
         display_y = self._schema.get_display_name(original_y)
 
         plt.figure(figsize=(10, 6))
-        sns.scatterplot(x=self._df[original_x], y=self._df[original_y])
+        # --- MODIFICATION START ---
+        # Change the colour to 'red' and marker size (s) to a smaller value, e.g., 20.
+        # The default size is often around 50.
+        sns.scatterplot(
+            x=self._df[original_x],
+            y=self._df[original_y],
+            color='red',  # Set the marker colour to red
+            s=30,          # Set the marker size (s) to a smaller value
+            # edgecolor = None,
+            alpha = 0.5,
+        )
+        # --- MODIFICATION END ---
+ 
         plt.title(f'{display_y} vs. {display_x}')
         plt.xlabel(display_x)
         plt.ylabel(display_y)
         
         # Cache and show the plot.
-        self._cache_plot()
-        plt.show()
+        self._save_plot_to_cache()  # Step 1: Save the plot to our report cache
+        plt.show()                  # Step 2: Display the plot in the notebook
+        plt.close()                 # Step 3: Close the figure to free up memory
 
     def plot_boxplots(self, numerical_cols: Union[str, List[str]], group_by_col: Optional[str] = None):
         """
@@ -173,8 +183,9 @@ class Visualizer:
                 plt.ylabel(display_col)
                 # Rotation is generally useful here as category names can be long.
                 plt.xticks(rotation=45)
-                self._cache_plot()
-                plt.show()
+                self._save_plot_to_cache()  # Step 1: Save the plot to our report cache
+                plt.show()                  # Step 2: Display the plot in the notebook
+                plt.close()                 # Step 3: Close the figure to free up memory
         # Scenario 2: Compare multiple numerical variables side-by-side.
         else:
             plt.figure(figsize=(12, 7))
@@ -197,5 +208,6 @@ class Visualizer:
             if len(cols_to_plot) > 1:
                 plt.xticks(rotation=45)
             
-            self._cache_plot()
-            plt.show()
+            self._save_plot_to_cache()  # Step 1: Save the plot to our report cache
+            plt.show()                  # Step 2: Display the plot in the notebook
+            plt.close()                 # Step 3: Close the figure to free up memory
