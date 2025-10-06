@@ -125,27 +125,37 @@ class Visualizer:
             plt.close()                 # Step 3: Close the figure to free up memory
 
     def plot_scatter(self, x_col: str, y_col: str):
-        """Creates a scatter plot to visualise the relationship between two numerical columns."""
+        """
+        Creates a scatter plot to visualize the relationship between two numerical columns.
+        This function will gracefully skip plotting if there is no valid data.
+        """
+        print(f"--- Plotting Scatter Plot: {y_col} vs. {x_col} ---")
         original_x = self._schema.get_original_name(x_col)
         original_y = self._schema.get_original_name(y_col)
         
         display_x = self._schema.get_display_name(original_x)
         display_y = self._schema.get_display_name(original_y)
 
+        # Create a temporary DataFrame with just the two columns and drop rows
+        # where either x or y is a missing value (NaN).
+        plot_data = self._df[[original_x, original_y]].dropna()
+
+        # Check if any data remains to be plotted after removing missing values.
+        if plot_data.empty:
+            print(f"⚠️ SKIPPING PLOT: No overlapping data points found for '{display_y}' vs. '{display_x}'.")
+            return # Exit the function to prevent the crash
+
         plt.figure(figsize=(10, 6))
-        # --- MODIFICATION START ---
-        # Change the colour to 'red' and marker size (s) to a smaller value, e.g., 20.
-        # The default size is often around 50.
+        
+        # The plotting call now uses the cleaned 'plot_data' DataFrame
         sns.scatterplot(
-            x=self._df[original_x],
-            y=self._df[original_y],
-            color='red',  # Set the marker colour to red
-            s=30,          # Set the marker size (s) to a smaller value
-            # edgecolor = None,
-            alpha = 0.5,
+            x=plot_data[original_x],
+            y=plot_data[original_y],
+            color='red',
+            s=20,
+            alpha=0.5,
         )
-        # --- MODIFICATION END ---
- 
+
         plt.title(f'{display_y} vs. {display_x}')
         plt.xlabel(display_x)
         plt.ylabel(display_y)
@@ -194,6 +204,13 @@ class Visualizer:
             # This converts it from a 'wide' format to a 'long' format.
             # E.g., from columns 'Temp', 'Press' to one 'Channel' column and one 'Value' column.
             df_melted = self._df[original_cols].melt(var_name='Channel', value_name='Value')
+
+            # Before plotting, check if there are any valid (non-NaN) data points.
+            if df_melted['Value'].notna().sum() == 0:
+                # If there's nothing to plot, print a warning and exit the function.
+                print(f"⚠️ SKIPPING PLOT: No valid data found for column(s): {', '.join(cols_to_plot)}")
+                plt.close()  # Close the empty figure to free up memory
+                return
 
             # Use the display names for the channels on the plot's x-axis.
             display_name_map = {orig: self._schema.get_display_name(orig) for orig in original_cols}

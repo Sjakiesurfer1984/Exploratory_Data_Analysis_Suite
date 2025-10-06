@@ -12,7 +12,7 @@
 # ==============================================================================
 
 import pandas as pd
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 class DataProfiler:
     """
@@ -169,3 +169,98 @@ class DataProfiler:
                 # We use `t.__name__` to get a clean string like 'str' instead of "<class 'str'>".
                 mixed_type_info[col] = [t.__name__ for t in types_in_col]
         return mixed_type_info
+
+
+
+    def identify_outliers(self, 
+                        columns: Union[str, List[str]], 
+                        method: str = 'iqr', 
+                        **kwargs) -> pd.DataFrame:
+        """
+        Identifies outliers in specified columns of a DataFrame using a chosen statistical method.
+
+        Args:
+            self (pd.DataFrame): The input DataFrame.
+            columns (Union[str, List[str]]): The column name or list of column names to check for outliers.
+            method (str, optional): The heuristic to use. Defaults to 'iqr'.
+                - 'iqr': Uses the Interquartile Range. Values outside Q1 - k*IQR and Q3 + k*IQR are outliers.
+                            Accepts a 'multiplier' (k) in kwargs, which defaults to 1.5.
+                - 'zscore': Uses the Z-score. Values with a Z-score greater than a threshold are outliers.
+                            Accepts a 'threshold' in kwargs, which defaults to 3.0.
+            **kwargs: Additional keyword arguments for the chosen method (e.g., multiplier=3.0).
+
+        Returns:
+            pd.DataFrame: A DataFrame containing only the rows identified as outliers. Includes an 
+                            'outlier_reason' column explaining why each row was flagged.
+        """
+        # Ensure 'columns' is a list for consistent processing
+        if isinstance(columns, str):
+            columns = [columns]
+
+        all_outliers_list = []
+
+        print(f"--- Identifying outliers using the '{method}' method ---")
+
+        for col in columns:
+            # --- Data Validation ---
+            if col not in self._df.columns:
+                print(f"Warning: Column '{col}' not found in DataFrame. Skipping.")
+                continue
+            if not pd.api.types.is_numeric_dtype(self._df[col]):
+                print(f"Warning: Column '{col}' is not numeric. Skipping.")
+                continue
+            
+            # Drop missing values for calculation to avoid errors
+            col_data = self._df[col].dropna()
+            if col_data.empty:
+                print(f"Info: Column '{col}' is empty. Skipping.")
+                continue
+
+            outliers_df = pd.DataFrame()
+
+            # --- Method 1: Interquartile Range (IQR) ---
+            if method == 'iqr':
+                multiplier = kwargs.get('multiplier', 1.5)
+                q1 = col_data.quantile(0.25)
+                q3 = col_data.quantile(0.75)
+                iqr = q3 - q1
+                lower_bound = q1 - (multiplier * iqr)
+                upper_bound = q3 + (multiplier * iqr)
+                
+                print(f"  - Column '{col}': IQR bounds are [{lower_bound:.2f}, {upper_bound:.2f}]")
+
+                # Find rows with values outside the IQR bounds
+                outlier_indices = col_data[(col_data < lower_bound) | (col_data > upper_bound)].index
+                outliers_df = self._df.loc[outlier_indices].copy()
+                outliers_df['outlier_reason'] = f"'{col}' outside IQR bounds"
+
+            # --- Method 2: Z-score (Standard Deviation) ---
+            elif method == 'zscore':
+                threshold = kwargs.get('threshold', 3.0)
+                mean = col_data.mean()
+                std = col_data.std()
+                
+                print(f"  - Column '{col}': Z-score threshold is {threshold:.2f}")
+
+                # Calculate Z-scores for each data point
+                z_scores = (col_data - mean) / std
+                
+                # Find rows where the absolute Z-score exceeds the threshold
+                outlier_indices = z_scores[abs(z_scores) > threshold].index
+                outliers_df = self._df.loc[outlier_indices].copy()
+                outliers_df['outlier_reason'] = f"'{col}' Z-score > {threshold}"
+                
+            else:
+                raise ValueError(f"Unknown method: '{method}'. Supported methods are 'iqr', 'zscore'.")
+                
+            if not outliers_df.empty:
+                all_outliers_list.append(outliers_df)
+
+        if not all_outliers_list:
+            print("No outliers found.")
+            return pd.DataFrame() # Return an empty DataFrame if no outliers are found
+
+        # Combine results from all columns and remove duplicate rows
+        final_outliers = pd.concat(all_outliers_list).drop_duplicates()
+        print(f"Found a total of {len(final_outliers)} outlier rows.")
+        return final_outliers

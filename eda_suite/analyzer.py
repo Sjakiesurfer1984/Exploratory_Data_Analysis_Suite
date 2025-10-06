@@ -128,6 +128,18 @@ class EDAAnalyzer:
             print(occurrence_df.to_string())
         print("------------------------------------------\n")
 
+    def show_outliers(self, 
+                            columns: Union[str, List[str]], 
+                            method: str = 'iqr', 
+                            **kwargs):
+        """
+        Identifies outliers in specified columns of a DataFrame using a chosen statistical method.
+        """
+        outlier_rows_df = self._profiler.identify_outliers(columns, method, **kwargs) 
+        print(f"--- Occurrences of outliers: ---")
+        display(outlier_rows_df)
+        print(outlier_rows_df.shape)
+
     # ==========================================================================
     # --- Statistics Methods: For Quantitative Analysis ---
     # ==========================================================================
