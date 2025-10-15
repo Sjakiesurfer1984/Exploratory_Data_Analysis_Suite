@@ -48,25 +48,25 @@ Project Structure
 
 <img width="704" height="244" alt="image" src="https://github.com/user-attachments/assets/f897c6af-aa78-4ea9-94f0-b92309587c3f" />
 
-How It Works
+# How It Works
 
 The main workflow follows four simple steps:
 
 import pandas as pd
 from eda_suite.containers import EdaContainer
 
-# 1. Load the dataset
+## 1. Load the dataset
 df = pd.read_csv("data.csv", delimiter=",", skiprows=23, encoding='latin1')
 
-# 2. Clean the dataset
+## 2. Clean the dataset
 from my_cleaning_module import clean_dataframe
 df = clean_dataframe(df)
 
-# 3. Initialize the EDA container
+## 3. Initialize the EDA container
 container = EdaContainer()
 container.config.df.from_value(df)
 
-# 4. Run EDA
+## 4. Run EDA
 analyzer = container.analyzer()
 analyzer.show_profile()
 analyzer.show_descriptive_stats()
