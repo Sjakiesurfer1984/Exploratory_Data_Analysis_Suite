@@ -53,6 +53,7 @@ Project Structure
 The main workflow follows four simple steps:
 
 import pandas as pd
+
 from eda_suite.containers import EdaContainer
 
 ## 1. Load the dataset
