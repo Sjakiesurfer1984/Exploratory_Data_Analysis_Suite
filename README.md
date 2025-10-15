@@ -45,16 +45,8 @@ This suite is designed to automate the repetitive parts of EDA — from fixing m
 - Easily extended for domain-specific analysis
 
 Project Structure
-Exploratory_Data_Analysis_Suite/
-│
-├── eda_suite/
-│   ├── containers.py        # Dependency container for analyzers, profilers, visualizers
-│   ├── analyzers/           # Logic for profiling and reporting
-│   ├── visualizers/         # Plotting utilities
-│   ├── cleaners/            # Data cleaning and preprocessing functions
-│
-├── main.ipynb               # Demonstration notebook (entry point)
-└── README.md
+
+<img width="704" height="244" alt="image" src="https://github.com/user-attachments/assets/f897c6af-aa78-4ea9-94f0-b92309587c3f" />
 
 How It Works
 
