@@ -72,3 +72,6 @@ analyzer = container.analyzer()
 analyzer.show_profile()
 analyzer.show_descriptive_stats()
 analyzer.show_missing_values()
+
+
+**Refer to main.py for a more elaborate example**
