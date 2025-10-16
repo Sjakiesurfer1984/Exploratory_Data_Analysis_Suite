@@ -22,6 +22,7 @@ from .schema import SchemaManager
 from .cleaner import DataCleaner
 from .report_generator import ReportGenerator
 import io
+import os
 
 class EDAAnalyzer:
     """
@@ -60,6 +61,28 @@ class EDAAnalyzer:
         # This dictionary stores any manual overrides for column types, ensuring
         # the user's domain knowledge can correct the automated heuristics.
         self._type_overrides = {}
+
+            # -----------------------------------------------------------
+        # Version tracking metadata
+        # -----------------------------------------------------------
+        self.session_id = uuid.uuid4().hex[:8]
+        self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Optionally import package version if defined in __init__.py
+        try:
+            from eda_suite import __version__ as suite_version
+        except ImportError:
+            suite_version = "unknown"
+
+        self.suite_version = suite_version
+        self.version_tag = f"EDA_{self.created_at.replace(' ', '_')}_{self.session_id}"
+
+        # Create a .logs folder if it doesn't exist
+        self._log_dir = os.path.join(os.getcwd(), ".logs")
+        os.makedirs(self._log_dir, exist_ok=True)
+
+        # Save session metadata immediately
+        self._save_session_metadata()
 
     # ==========================================================================
     # --- Profiler Methods: For Diagnosing and Inspecting Data ---
@@ -256,3 +279,37 @@ class EDAAnalyzer:
         # Step 2: The Analyzer delegates the report creation to its internal
         # ReportGenerator tool, passing the cache and filename correctly.
         self._report_generator.create_word_document(plot_cache, filename)
+
+    # ==========================================================================
+    # --- Version tracking ---
+    # ==========================================================================
+
+    def _save_session_metadata(self):
+        """Logs key session metadata (timestamp, version, dataset info) to a JSON file."""
+        metadata = {
+            "suite": "EDA Suite",
+            "suite_version": self.suite_version,
+            "session_id": self.session_id,
+            "created_at": self.created_at,
+            "version_tag": self.version_tag,
+            "data_shape": getattr(self._profiler._df, "shape", None),
+            "columns": list(getattr(self._profiler._df, "columns", [])),
+        }
+
+        filename = os.path.join(self._log_dir, f"{self.version_tag}.json")
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=4)
+
+        print(f"[LOG] EDA session metadata saved → {filename}")
+
+    def show_session_info(self):
+        """Displays session version and metadata."""
+        print(f"--- EDA Suite Session Info ---")
+        print(f"Suite Version: {self.suite_version}")
+        print(f"Session ID:    {self.session_id}")
+        print(f"Created At:    {self.created_at}")
+        print(f"Version Tag:   {self.version_tag}")
+        print(f"Logs saved to: {self._log_dir}")
+        print("-----------------------------------\n")
+
+
