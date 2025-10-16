@@ -79,7 +79,9 @@ class EDAAnalyzer:
             suite_version = "unknown"
 
         self.suite_version = suite_version
-        self.version_tag = f"EDA_{self.created_at.replace(' ', '_')}_{self.session_id}"
+        # Replace colons with hyphens for Windows-safe filenames
+        safe_timestamp = self.created_at.replace(":", "-").replace(" ", "_")
+        self.version_tag = f"EDA_{safe_timestamp}_{self.session_id}"
 
         # Create a .logs folder if it doesn't exist
         self._log_dir = os.path.join(os.getcwd(), ".logs")
