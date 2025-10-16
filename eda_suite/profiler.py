@@ -133,22 +133,34 @@ class DataProfiler:
         columns: list[str] | None = None
     ) -> pd.DataFrame:
         """
-        Finds all rows where specified value(s) appear in given columns.
-    
-        Args:
-            values_to_find: A list of values to search for.
-            columns: Optional list of column names to restrict the search.
-        Returns:
-            pd.DataFrame containing matching rows.
+        Finds occurrences (counts and percentages) of specified value(s)
+        in given columns of the DataFrame.
         """
         df = self._df
         if columns is not None:
             df = df[columns]
     
-        # Efficient boolean mask
-        mask = df.isin(values_to_find)
-        matches = df[mask.any(axis=1)]
-        return matches
+        # Normalise single values
+        if not isinstance(values_to_find, (list, tuple, set)):
+            values_to_find = [values_to_find]
+    
+        total_rows = len(df)
+        records = []
+    
+        for col in df.columns:
+            series = df[col]
+            for val in values_to_find:
+                count = (series == val).sum()
+                percentage = (count / total_rows) * 100 if total_rows > 0 else 0
+                records.append({
+                    "Column": col,
+                    "Value": val,
+                    "Count": count,
+                    "Percentage": round(percentage, 2)
+                })
+    
+        return pd.DataFrame(records)
+
 
     
     def get_mixed_type_report(self) -> dict:
