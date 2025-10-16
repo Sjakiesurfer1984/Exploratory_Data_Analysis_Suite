@@ -154,6 +154,20 @@ class EDAAnalyzer:
         print(stats_df.to_string())
         print("-----------------------------------------\n")
 
+    def show_skewness(self):
+        """Prints skewness values for numerical columns."""
+        df_skew = self._stats.get_skewness()
+        print("--- Skewness of Numerical Columns ---")
+        print(df_skew.to_string(index=False))
+        print("------------------------------------\n")
+
+    def show_normality(self):
+        """Prints p-values from the normality test for numerical columns."""
+        df_norm = self._stats.get_normality()
+        print("--- Normality Test (D’Agostino–Pearson) ---")
+        print(df_norm.to_string(index=False))
+        print("-------------------------------------------\n")
+    
     # ==========================================================================
     # --- Schema Methods: For Managing Column Metadata ---
     # ==========================================================================
