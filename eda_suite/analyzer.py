@@ -154,16 +154,16 @@ class EDAAnalyzer:
         print(stats_df.to_string())
         print("-----------------------------------------\n")
 
-    def show_skewness(self):
+    def show_skewness(self, columns: list[str] | None = None):
         """Prints skewness values for numerical columns."""
-        df_skew = self._stats.get_skewness()
+        df_skew = self._stats.get_skewness(columns)
         print("--- Skewness of Numerical Columns ---")
         print(df_skew.to_string(index=False))
         print("------------------------------------\n")
 
-    def show_normality(self):
+    def show_normality(self, columns: list[str] | None = None):
         """Prints p-values from the normality test for numerical columns."""
-        df_norm = self._stats.get_normality()
+        df_norm = self._stats.get_normality(columns)
         print("--- Normality Test (D’Agostino–Pearson) ---")
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
