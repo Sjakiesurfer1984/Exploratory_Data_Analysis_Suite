@@ -30,6 +30,9 @@ class EDAAnalyzer:
     This class acts as a single, convenient entry point for all EDA tasks. It does
     not contain complex logic itself; instead, it delegates tasks to the appropriate
     specialist component that was injected upon initialisation.
+
+    The EDAAnalyzer integrates profiling, visualisation, and statistical
+    heuristics to provide quick insights into dataset structure.
     """
 
     def __init__(
