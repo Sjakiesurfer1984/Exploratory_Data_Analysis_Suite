@@ -1,4 +1,5 @@
 import pandas as pd
+import scipy.stats as stats
 
 class StatisticsCalculator:
     """Performs statistical calculations on the DataFrame."""
