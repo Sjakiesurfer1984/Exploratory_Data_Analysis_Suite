@@ -121,15 +121,38 @@ class EDAAnalyzer:
             print(missing_df.to_string())
         print("---------------------------\n")
 
-    def show_value_occurrences(self, value_to_find: any):
-        """Prints a report of a specific custom value's occurrences (e.g., 'N.U.', -999)."""
-        occurrence_df = self._profiler.find_value_occurrences(value_to_find)
-        print(f"--- Occurrences Report for value: '{value_to_find}' ---")
+    def show_value_occurrences(
+        self,
+        values_to_find: any,
+        columns: list[str] | None = None,
+        limit: int = 10
+    ):
+        """
+        Prints a report of where one or more values occur in the DataFrame.
+    
+        Args:
+            values_to_find: A single value or list of values to search for.
+            columns: Optional list of column names to restrict the search.
+            limit: Maximum number of matching rows to display.
+        """
+        # Normalise to list
+        if not isinstance(values_to_find, (list, tuple, set)):
+            values_to_find = [values_to_find]
+    
+        print(f"--- Occurrences Report for value(s): {values_to_find} ---")
+    
+        # Delegate to the profiler
+        occurrence_df = self._profiler.find_value_occurrences(values_to_find, columns=columns)
+    
         if occurrence_df.empty:
-            print(f"No occurrences of '{value_to_find}' found.")
+            print(f"No occurrences of {values_to_find} found.")
         else:
-            print(occurrence_df.to_string())
+            print(occurrence_df.head(limit).to_string())
+            total = len(occurrence_df)
+            if total > limit:
+                print(f"\nShowing first {limit} of {total} matches.")
         print("------------------------------------------\n")
+
 
     def show_outliers(self, 
                             columns: Union[str, List[str]], 
