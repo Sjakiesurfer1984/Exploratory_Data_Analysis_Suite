@@ -127,29 +127,29 @@ class DataProfiler:
             by='missing_count', ascending=False
         )
 
-    def find_value_occurrences(self, value_to_find: any) -> pd.DataFrame:
+    def find_value_occurrences(
+        self,
+        values_to_find: list[any],
+        columns: list[str] | None = None
+    ) -> pd.DataFrame:
         """
-        Finds all occurrences of a user-specified value (e.g., 'N.U.', -999, 'Not Available').
-        This is useful for identifying custom null values that `isnull()` would not detect.
+        Finds all rows where specified value(s) appear in given columns.
+    
+        Args:
+            values_to_find: A list of values to search for.
+            columns: Optional list of column names to restrict the search.
+        Returns:
+            pd.DataFrame containing matching rows.
         """
-        # This performs a boolean comparison across the entire DataFrame. The result is a
-        # DataFrame of the same shape, containing True/False values.
-        occurrences = (self._df == value_to_find)
-        
-        # A clever trick in pandas: summing a boolean series/DataFrame counts the `True` values.
-        occurrence_counts = occurrences.sum()
-        
-        occurrence_percentages = (occurrence_counts / len(self._df)) * 100
-        
-        occurrence_df = pd.DataFrame({
-            'occurrence_count': occurrence_counts,
-            'occurrence_percentage': occurrence_percentages
-        })
-        
-        # As before, we filter for non-zero counts to produce a clean report.
-        return occurrence_df[occurrence_df['occurrence_count'] > 0].sort_values(
-            by='occurrence_count', ascending=False
-        )
+        df = self._df
+        if columns is not None:
+            df = df[columns]
+    
+        # Efficient boolean mask
+        mask = df.isin(values_to_find)
+        matches = df[mask.any(axis=1)]
+        return matches
+
     
     def get_mixed_type_report(self) -> dict:
         """
