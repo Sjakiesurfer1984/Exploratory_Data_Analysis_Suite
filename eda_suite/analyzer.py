@@ -264,9 +264,9 @@ class EDAAnalyzer:
         self._visualizer.plot_boxplots(numerical_cols, group_by_col)
 
     def plot_pairplot(self, columns=None, hue=None):
-    """Plots a pair plot to visualise relationships between numerical features."""
-    print("--- Generating Pair Plot ---")
-    self._visualizer.plot_pairplot(columns, hue)
+        """Plots a pair plot to visualise relationships between numerical features."""
+        print("--- Generating Pair Plot ---")
+        self._visualizer.plot_pairplot(columns, hue)
 
     # ==========================================================================
     # --- Cleaner Methods: For Modifying the DataFrame ---
