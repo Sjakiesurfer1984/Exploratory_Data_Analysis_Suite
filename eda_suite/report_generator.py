@@ -15,6 +15,7 @@ from docx.shared import Inches
 import io
 from typing import List
 from datetime import datetime
+import pandas as pd
 
 class ReportGenerator:
     """
