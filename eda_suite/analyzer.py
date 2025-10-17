@@ -310,19 +310,27 @@ class EDAAnalyzer:
     # REPORT GENERATION
     # ==========================================================================
 
-    def export_plots_to_word(self, filename: str = "eda_report.docx") -> None:
+    def export_plots_to_word(self, analyzer_name: str = "analyzer", include_preview: bool = True) -> None:
         """
-        Export all cached plots to a Word document.
-
+        Delegates the creation of a timestamped Word report to the ReportGenerator.
+    
         Args:
-            filename (str): Output document name.
+            analyzer_name (str): Logical name for this analyzer instance (e.g., 'analyzer_raw').
+            include_preview (bool): If True, includes a df.head() preview in the report.
         """
         print("--- Exporting Plots to Word Document ---")
         plot_cache = self._visualizer.get_plot_cache()
         if not plot_cache:
             print("No plots generated yet.")
             return
-        self._report_generator.create_word_document(plot_cache, filename)
+    
+        df_ref = getattr(self._profiler, "_df", None)
+        self._report_generator.create_word_document(
+            plot_cache=plot_cache,
+            analyzer_name=analyzer_name,
+            df_preview=df_ref.head() if include_preview and df_ref is not None else None,
+        )
+
 
     # ==========================================================================
     # VERSION / SESSION INFO
