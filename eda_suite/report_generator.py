@@ -28,50 +28,54 @@ class ReportGenerator:
     def create_word_document(
         self,
         plot_cache: List[io.BytesIO],
-        analyzer_name: str = "analyzer",
-        df_preview=None,
+        filename: str | None = None,
+        analyzer_name: str | None = None,
+        df_preview: pd.DataFrame | None = None
     ) -> None:
         """
-        Creates a fully formatted timestamped Word report.
+        Creates a Microsoft Word report from cached plots and optional DataFrame preview.
     
         Args:
             plot_cache (List[io.BytesIO]): Cached plot images.
-            analyzer_name (str): Logical name for the analyzer instance.
-            df_preview (pd.DataFrame | None): Optional DataFrame head() for preview.
+            filename (str | None): Optional target filename (.docx). If None, one will
+                                   be automatically generated using analyzer_name + timestamp.
+            analyzer_name (str | None): Logical name of the analyzer instance.
+            df_preview (pd.DataFrame | None): Optional DataFrame preview to include.
         """
-        from datetime import datetime
-        import docx
-        from docx.shared import Inches
-    
-        # Generate descriptive timestamped filename
+        # --- Handle filename creation ---
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        filename = f"eda_report_{analyzer_name}_{timestamp}.docx"
+        base_name = analyzer_name or "report"
+        if filename is None:
+            filename = f"{base_name}_{timestamp}.docx"
+        elif not filename.endswith(".docx"):
+            filename += ".docx"
     
+        # --- Start document ---
         document = docx.Document()
-        document.add_heading(f"Exploratory Data Analysis Report – {analyzer_name}", level=1)
-        document.add_paragraph(f"Report generated on: {timestamp}")
-        document.add_paragraph("This document summarises exploratory findings and visualisations.")
+        document.add_heading(f"{base_name.title()} Report", level=1)
+        document.add_paragraph(f"Generated on: {datetime.now():%A, %d %B %Y, %I:%M %p}")
     
-        # Add optional DataFrame preview
+        # --- Optional preview of df.head() ---
         if df_preview is not None:
-            document.add_heading("Data Preview (First 5 Rows)", level=2)
-            table = document.add_table(rows=1, cols=len(df_preview.columns))
-            table.style = 'Table Grid'
+            document.add_paragraph("Data preview (first 5 rows):")
+            head = df_preview.head()
+            table = document.add_table(rows=1, cols=len(head.columns))
             hdr_cells = table.rows[0].cells
-            for i, col_name in enumerate(df_preview.columns):
-                hdr_cells[i].text = str(col_name)
-            for _, row in df_preview.iterrows():
+            for i, col in enumerate(head.columns):
+                hdr_cells[i].text = str(col)
+            for _, row in head.iterrows():
                 row_cells = table.add_row().cells
                 for i, val in enumerate(row):
                     row_cells[i].text = str(val)
-            document.add_page_break()
+            document.add_paragraph()  # space after table
     
-        # Add plots
-        for i, img_buffer in enumerate(plot_cache):
+        # --- Insert plots ---
+        for i, img in enumerate(plot_cache):
             document.add_heading(f"Plot {i + 1}", level=2)
-            document.add_picture(img_buffer, width=Inches(6.0))
+            document.add_picture(img, width=Inches(6.0))
             document.add_page_break()
     
+        # --- Save ---
         try:
             document.save(filename)
             print(f"Successfully generated report: '{filename}'")
