@@ -228,3 +228,12 @@ class Visualizer:
             self._save_plot_to_cache()  # Step 1: Save the plot to our report cache
             plt.show()                  # Step 2: Display the plot in the notebook
             plt.close()                 # Step 3: Close the figure to free up memory
+
+
+    def plot_pairplot(self, columns=None, hue=None):
+        """Creates a pair plot (scatterplot matrix) for given columns."""
+        if columns is None:
+            columns = self._df.select_dtypes(include=['number']).columns
+        sns.pairplot(self._df[columns], hue=hue, diag_kind="kde", corner=True)
+        plt.suptitle("Pair Plot of Selected Features", y=1.02)
+        plt.show()
