@@ -237,3 +237,35 @@ class Visualizer:
         sns.pairplot(self._df[columns], hue=hue, diag_kind="kde", corner=True)
         plt.suptitle("Pair Plot of Selected Features", y=1.02)
         plt.show()
+
+    def plot_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson"):
+        """
+        Displays a heatmap of the correlation matrix for numerical columns.
+    
+        Args:
+            columns (list[str] | None): List of columns to include. Defaults to all numerical.
+            method (str): Correlation method ('pearson', 'spearman', 'kendall').
+        """
+        # Select columns
+        if columns is None:
+            cols = self._df.select_dtypes(include=['number']).columns
+        else:
+            cols = columns
+    
+        if len(cols) == 0:
+            print("⚠️ No numerical columns found for correlation plot.")
+            return
+    
+        corr = self._df[cols].corr(method=method)
+    
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", square=True, cbar=True)
+        plt.title(f"{method.capitalize()} Correlation Matrix", fontsize=14, pad=12)
+        plt.xticks(rotation=45, ha="right")
+        plt.yticks(rotation=0)
+        plt.tight_layout()
+    
+        self._save_plot_to_cache()  # Save for later report export
+        plt.show()
+        plt.close()
+
