@@ -44,6 +44,7 @@ class EDAAnalyzer:
         schema: SchemaManager,
         cleaner: DataCleaner,
         report_generator: ReportGenerator,
+        name: str = "analyzer"
     ) -> None:
         """
         Initialise the EDAAnalyzer and store injected dependencies.
@@ -63,6 +64,11 @@ class EDAAnalyzer:
         self._cleaner = cleaner
         self._report_generator = report_generator
         self._type_overrides: Dict[str, str] = {}
+        
+        # ----------------------------------------------------------------------
+        # Instance identification
+        # ----------------------------------------------------------------------
+        self.name: str = name  # used for file naming and session tracking
 
         # ----------------------------------------------------------------------
         # Version-tracking metadata
