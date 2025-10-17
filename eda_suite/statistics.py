@@ -12,9 +12,16 @@ class StatisticsCalculator:
         """Calculates descriptive statistics for numerical columns."""
         return self._df[self._numerical_cols].describe()
 
-    def get_correlation_matrix(self) -> pd.DataFrame:
-        """Calculates the correlation matrix for numerical columns."""
-        return self._df[self._numerical_cols].corr()
+    def get_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson") -> pd.DataFrame:
+        """
+        Returns the correlation matrix over numerical columns (default: Pearson).
+        method can be 'pearson', 'spearman', or 'kendall'.
+        """
+        cols = columns or self._numerical_cols
+        # Guard against empty selection
+        if len(cols) == 0:
+            return pd.DataFrame()
+        return self._df[cols].corr(method=method)
 
     def get_skewness(self, columns: list[str] | None = None) -> pd.DataFrame:
         """Returns skewness for each specified numerical column."""
