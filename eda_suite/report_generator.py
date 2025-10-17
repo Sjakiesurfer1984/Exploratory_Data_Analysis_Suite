@@ -25,57 +25,53 @@ class ReportGenerator:
     and produce a file as output.
     """
 
-    def create_word_document(self, plot_cache: List[io.BytesIO], filename: str):
+    def create_word_document(
+        self,
+        plot_cache: List[io.BytesIO],
+        analyzer_name: str = "analyzer",
+        df_preview=None,
+    ) -> None:
         """
-        Creates a Microsoft Word document from a list of in-memory plot images.
-        
-        This method iterates through a cache of plot images, embedding each one
-        into a newly created .docx file, complete with titles and proper formatting.
-        
+        Creates a fully formatted timestamped Word report.
+    
         Args:
-            plot_cache (List[io.BytesIO]): A list of plot images, where each image
-                                           is stored in an in-memory binary buffer.
-            filename (str): The desired name for the output .docx file.
+            plot_cache (List[io.BytesIO]): Cached plot images.
+            analyzer_name (str): Logical name for the analyzer instance.
+            df_preview (pd.DataFrame | None): Optional DataFrame head() for preview.
         """
-        # A user-friendly check to ensure the filename has the correct extension.
-        if not filename.endswith('.docx'):
-            filename += '.docx'
-
-        # Initialise a new, blank Word document object.
+        from datetime import datetime
+        import docx
+        from docx.shared import Inches
+    
+        # Generate descriptive timestamped filename
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+        filename = f"eda_report_{analyzer_name}_{timestamp}.docx"
+    
         document = docx.Document()
-        
-        # --- Add Report Header ---
-        # Add a main title to the document. The 'level=1' corresponds to the
-        # "Heading 1" style in Microsoft Word.
-        document.add_heading('Exploratory Data Analysis Report', level=1)
-        
-        # Capture the current time to provide context for when the report was generated.
-        # This is good practice for reproducibility and tracking analysis versions.
-        timestamp = datetime.now().strftime('%A, %d %B %Y, %I:%M %p')
+        document.add_heading(f"Exploratory Data Analysis Report – {analyzer_name}", level=1)
         document.add_paragraph(f"Report generated on: {timestamp}")
-        document.add_paragraph(
-            "This document contains the visualisations generated during the analysis session."
-        )
-        
-        # --- Embed Plots from Cache ---
-        # We use `enumerate` to get both the index (for numbering) and the item
-        # as we loop through the list of cached plot images.
-        for i, img_buffer in enumerate(plot_cache):
-            # Add a subheading for each plot.
-            document.add_heading(f'Plot {i + 1}', level=2)
-            
-            # Embed the image from the in-memory buffer into the document.
-            # We explicitly set the width to a standard size (6.0 inches) to ensure
-            # all plots are consistently formatted and fit well on a standard A4 page.
-            document.add_picture(img_buffer, width=Inches(6.0))
-            
-            # For better readability, insert a page break after each plot. This ensures
-            # that each visualisation starts on a fresh page.
+        document.add_paragraph("This document summarises exploratory findings and visualisations.")
+    
+        # Add optional DataFrame preview
+        if df_preview is not None:
+            document.add_heading("Data Preview (First 5 Rows)", level=2)
+            table = document.add_table(rows=1, cols=len(df_preview.columns))
+            table.style = 'Table Grid'
+            hdr_cells = table.rows[0].cells
+            for i, col_name in enumerate(df_preview.columns):
+                hdr_cells[i].text = str(col_name)
+            for _, row in df_preview.iterrows():
+                row_cells = table.add_row().cells
+                for i, val in enumerate(row):
+                    row_cells[i].text = str(val)
             document.add_page_break()
-
-        # --- Save the Final Document ---
-        # It's robust practice to wrap file I/O operations in a try...except block
-        # to gracefully handle potential filesystem errors (e.g., permission denied).
+    
+        # Add plots
+        for i, img_buffer in enumerate(plot_cache):
+            document.add_heading(f"Plot {i + 1}", level=2)
+            document.add_picture(img_buffer, width=Inches(6.0))
+            document.add_page_break()
+    
         try:
             document.save(filename)
             print(f"Successfully generated report: '{filename}'")
