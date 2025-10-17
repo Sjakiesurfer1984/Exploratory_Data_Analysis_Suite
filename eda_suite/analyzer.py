@@ -179,8 +179,6 @@ class EDAAnalyzer:
     
         return result_df
 
-
-
     def show_outliers(self, 
                             columns: Union[str, List[str]], 
                             method: str = 'iqr', 
@@ -218,21 +216,10 @@ class EDAAnalyzer:
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
-    def show_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson") -> None:
-        """Prints the correlation matrix for numerical columns."""
-        corr_df = self._stats.get_correlation_matrix(columns=columns, method=method)
-        if corr_df.empty:
-            print("--- Correlation Matrix ---")
-            print("No numerical columns available.")
-            print("--------------------------\n")
-            return
-        print("--- Correlation Matrix ---")
-        print(corr_df.round(3).to_string())
-        print("--------------------------\n")
-    
-    def get_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson"):
-        """Returns the correlation matrix (useful for plotting)."""
-        return self._stats.get_correlation_matrix(columns=columns, method=method)
+    def plot_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson"):
+        """Delegates to the visualiser to draw a correlation heatmap."""
+        print(f"--- Plotting {method.capitalize()} Correlation Matrix ---")
+        self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
         
     # ==========================================================================
     # --- Schema Methods: For Managing Column Metadata ---
