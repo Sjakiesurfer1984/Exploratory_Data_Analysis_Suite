@@ -56,7 +56,6 @@ class Visualizer:
         """
         return self._plot_cache
 
-
     def _save_plot_to_cache(self):
         """
         Saves the current matplotlib figure to an in-memory binary buffer.
@@ -142,7 +141,7 @@ class Visualizer:
 
         # Check if any data remains to be plotted after removing missing values.
         if plot_data.empty:
-            print(f"⚠️ SKIPPING PLOT: No overlapping data points found for '{display_y}' vs. '{display_x}'.")
+            print(f"SKIPPING PLOT: No overlapping data points found for '{display_y}' vs. '{display_x}'.")
             return # Exit the function to prevent the crash
 
         plt.figure(figsize=(10, 6))
@@ -208,7 +207,7 @@ class Visualizer:
             # Before plotting, check if there are any valid (non-NaN) data points.
             if df_melted['Value'].notna().sum() == 0:
                 # If there's nothing to plot, print a warning and exit the function.
-                print(f"⚠️ SKIPPING PLOT: No valid data found for column(s): {', '.join(cols_to_plot)}")
+                print(f"SKIPPING PLOT: No valid data found for column(s): {', '.join(cols_to_plot)}")
                 plt.close()  # Close the empty figure to free up memory
                 return
 
@@ -229,7 +228,6 @@ class Visualizer:
             plt.show()                  # Step 2: Display the plot in the notebook
             plt.close()                 # Step 3: Close the figure to free up memory
 
-
     def plot_pairplot(self, columns=None, hue=None):
         """Creates a pair plot (scatterplot matrix) for given columns."""
         if columns is None:
@@ -238,25 +236,21 @@ class Visualizer:
         plt.suptitle("Pair Plot of Selected Features", y=1.02)
         plt.show()
 
-    def plot_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson"):
+    def plot_correlation_matrix(
+        self,
+        stats_calculator,
+        columns: list[str] | None = None,
+        method: str = "pearson",
+    ):
         """
-        Displays a heatmap of the correlation matrix for numerical columns.
-    
-        Args:
-            columns (list[str] | None): List of columns to include. Defaults to all numerical.
-            method (str): Correlation method ('pearson', 'spearman', 'kendall').
+        Plots a heatmap of the correlation matrix.
+        The computation is delegated to the StatisticsCalculator for consistency.
         """
-        # Select columns
-        if columns is None:
-            cols = self._df.select_dtypes(include=['number']).columns
-        else:
-            cols = columns
+        corr = stats_calculator.get_correlation_matrix(columns=columns, method=method)
     
-        if len(cols) == 0:
-            print("⚠️ No numerical columns found for correlation plot.")
+        if corr.empty:
+            print("No numerical columns found for correlation plot.")
             return
-    
-        corr = self._df[cols].corr(method=method)
     
         plt.figure(figsize=(10, 8))
         sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", square=True, cbar=True)
@@ -265,7 +259,8 @@ class Visualizer:
         plt.yticks(rotation=0)
         plt.tight_layout()
     
-        self._save_plot_to_cache()  # Save for later report export
+        self._save_plot_to_cache()
         plt.show()
         plt.close()
+
 
