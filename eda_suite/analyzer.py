@@ -217,7 +217,23 @@ class EDAAnalyzer:
         print("--- Normality Test (D’Agostino–Pearson) ---")
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
+
+    def show_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson") -> None:
+        """Prints the correlation matrix for numerical columns."""
+        corr_df = self._stats.get_correlation_matrix(columns=columns, method=method)
+        if corr_df.empty:
+            print("--- Correlation Matrix ---")
+            print("No numerical columns available.")
+            print("--------------------------\n")
+            return
+        print("--- Correlation Matrix ---")
+        print(corr_df.round(3).to_string())
+        print("--------------------------\n")
     
+    def get_correlation_matrix(self, columns: list[str] | None = None, method: str = "pearson"):
+        """Returns the correlation matrix (useful for plotting)."""
+        return self._stats.get_correlation_matrix(columns=columns, method=method)
+        
     # ==========================================================================
     # --- Schema Methods: For Managing Column Metadata ---
     # ==========================================================================
