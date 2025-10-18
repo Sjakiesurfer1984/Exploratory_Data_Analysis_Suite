@@ -297,6 +297,13 @@ class EDAAnalyzer:
         """
         print(f"--- Plotting Box Plot(s) {self.name}---")
         self._visualizer.plot_boxplots(numerical_cols, group_by_col, dataset_label=self.name)
+    
+    def plot_grouped_boxgrid(self, numerical_cols: list[str], group_col: str) -> None:
+        """Plot a grid of boxplots for numerical columns grouped by one categorical variable."""
+        print(f"--- Plotting grouped boxgrid ({self.name}) ---")
+        self._visualizer.plot_grouped_boxgrid(
+            numerical_cols, group_col, dataset_label=self.name
+        )
 
     def plot_pairplot(
         self,
