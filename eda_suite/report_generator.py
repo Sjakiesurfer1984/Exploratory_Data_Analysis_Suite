@@ -7,7 +7,7 @@
 # code clean and focused on their respective tasks.
 #
 # Author: Tim Vos
-# Last Modified: 2 October 2025
+# Last Modified: 18 October 2025
 # ==============================================================================
 
 import docx
@@ -16,6 +16,7 @@ import io
 from typing import List
 from datetime import datetime
 import pandas as pd
+import os
 
 class ReportGenerator:
     """
@@ -78,7 +79,16 @@ class ReportGenerator:
     
         # --- Save ---
         try:
-            document.save(filename)
-            print(f"Successfully generated report: '{filename}'")
+            # Create Reports folder under current project root if not already existing
+            reports_dir = os.path.join(os.getcwd(), "Reports")
+            os.makedirs(reports_dir, exist_ok=True)
+        
+            # Combine folder path and filename
+            output_path = os.path.join(reports_dir, filename)
+        
+            # Save the Word document
+            document.save(output_path)
+            print(f"Successfully generated report: '{output_path}'")
+        
         except Exception as e:
             print(f"Error: Could not save the document. Reason: {e}")
