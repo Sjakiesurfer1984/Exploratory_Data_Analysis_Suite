@@ -398,3 +398,49 @@ class EDAAnalyzer:
         print(f"Version Tag:   {self.version_tag}")
         print(f"Logs saved to: {self._log_dir}")
         print("-----------------------------------\n")
+
+    # ======================================================================
+    # FACTORY CONSTRUCTOR
+    # ======================================================================
+    @classmethod
+    def from_dataframe(cls, df, name: str = "EDA session") -> "EDAAnalyzer":
+        """
+        Factory constructor that automatically builds a fully configured EDAAnalyzer
+        (Profiler, Stats, Visualizer, SchemaManager, Cleaner, ReportGenerator)
+        from a given pandas DataFrame.
+
+        This replaces the need to manually create and wire an EdaContainer.
+
+        Args:
+            df (pd.DataFrame): The dataset to analyse.
+            name (str): Optional human-readable session name (e.g. 'Raw data').
+
+        Returns:
+            EDAAnalyzer: A ready-to-use, fully configured analyzer instance.
+        """
+        from .profiler import DataProfiler
+        from .statistics import StatisticsCalculator
+        from .visualizer import Visualizer
+        from .schema import SchemaManager
+        from .cleaner import DataCleaner
+        from .report_generator import ReportGenerator
+
+        # --- Step 1: Initialise shared components ---
+        schema = SchemaManager(df)
+        profiler = DataProfiler(df)
+        stats = StatisticsCalculator(df)
+        visualizer = Visualizer(df, schema)
+        cleaner = DataCleaner(df)
+        report_generator = ReportGenerator()
+
+        # --- Step 2: Construct the analyzer with all dependencies injected ---
+        return cls(
+            profiler=profiler,
+            stats=stats,
+            visualizer=visualizer,
+            schema=schema,
+            cleaner=cleaner,
+            report_generator=report_generator,
+            name=name,
+        )
+
