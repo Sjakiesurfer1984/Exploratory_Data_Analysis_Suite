@@ -323,6 +323,16 @@ class EDAAnalyzer:
         print(f"--- Plotting Pair Plot(s) {self.name}---")
         self._visualizer.plot_pairplot(columns=columns, hue=hue, dataset_label=self.name)
 
+    def plot_pca_scree(self, columns: list[str] | None = None) -> None:
+        """
+        Compute and plot the PCA scree plot for selected numerical columns.
+        """
+        print(f"--- Plotting PCA scree plot ({self.name}) ---")
+        pca_df = self._stats.get_pca_components(columns=columns)
+        if pca_df.empty:
+            return
+        self._visualizer.plot_pca_scree(pca_df, dataset_label=self.name)
+
     # ==========================================================================
     # CLEANER METHODS
     # ==========================================================================
