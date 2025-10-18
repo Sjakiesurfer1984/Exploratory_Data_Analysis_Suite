@@ -222,7 +222,7 @@ class EDAAnalyzer:
             columns=columns,
             method=method,
             dataset_label=self.name
-        )-> None:
+        ) 
         """
         Plot a correlation heatmap using the Visualiser.
 
