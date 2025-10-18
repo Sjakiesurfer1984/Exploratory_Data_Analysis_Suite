@@ -216,13 +216,6 @@ class EDAAnalyzer:
         print("-------------------------------------------\n")
 
     def plot_correlation_matrix(self, columns: Optional[list[str]] = None, method: str = "pearson") -> None:
-        print(f"--- Plotting {method.capitalize()} correlation matrix ({self.name}) ---")
-        self._visualizer.plot_correlation_matrix(
-            self._stats,
-            columns=columns,
-            method=method,
-            dataset_label=self.name
-        ) 
         """
         Plot a correlation heatmap using the Visualiser.
 
@@ -233,7 +226,7 @@ class EDAAnalyzer:
         Example:
             analyzer.plot_correlation_matrix(method="spearman")
         """
-        print(f"--- Plotting {method.capitalize()} Correlation Matrix {self.name} ---")
+        print(f"--- Plotting {method.capitalize()} Correlation Matrix ({self.name}) ---")
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
     
     def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
