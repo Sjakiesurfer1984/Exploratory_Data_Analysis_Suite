@@ -277,3 +277,51 @@ class Visualizer:
         self._save_plot_to_cache()
         plt.show()
         plt.close()
+
+    def plot_pca_scree(
+        self,
+        pca_df: pd.DataFrame,
+        dataset_label: str | None = None
+    ) -> None:
+        """
+        Plot a PCA scree plot showing explained variance per component.
+
+        Args:
+            pca_df (pd.DataFrame): DataFrame returned by get_pca_components().
+            dataset_label (str | None): Optional dataset label for the title.
+        """
+        if pca_df.empty:
+            print("No PCA data to plot.")
+            return
+
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(
+            x="Component",
+            y="ExplainedVarianceRatio",
+            data=pca_df,
+            marker="o"
+        )
+        sns.scatterplot(
+            x="Component",
+            y="ExplainedVarianceRatio",
+            data=pca_df,
+            color="red",
+            s=80,
+            legend=False
+        )
+        plt.plot(
+            pca_df["Component"],
+            pca_df["CumulativeVariance"],
+            linestyle="--",
+            color="grey",
+            alpha=0.7,
+            label="Cumulative variance"
+        )
+        plt.xlabel("Principal component")
+        plt.ylabel("Explained variance ratio")
+        plt.title(f"{title_prefix}PCA scree plot")
+        plt.legend()
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
