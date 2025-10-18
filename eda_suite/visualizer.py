@@ -6,14 +6,12 @@
 #
 # Author: Tim Vos
 # ==============================================================================
-
-import pandas as pd
+    
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 import numpy as np
-from typing import Union, List, Optional
-from .schema import SchemaManager
-import io
+from scipy.cluster.hierarchy import dendrogram
 
 
 class Visualizer:
@@ -339,3 +337,102 @@ class Visualizer:
         plt.tight_layout()
         self._save_plot_to_cache()
         plt.show()
+
+
+    # ==============================================================================
+    # Additional visualisation methods for PCA, t-SNE, UMAP, clustering
+    # ==============================================================================
+
+    def plot_pca_scatter(self, pca_df: pd.DataFrame, dataset_label: str | None = None) -> None:
+        """Plot 2D PCA scatter (PC1 vs PC2)."""
+        if pca_df.empty:
+            print("No PCA data to plot.")
+            return
+    
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(x="PC1", y="PC2", data=pca_df, s=50, alpha=0.7)
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}Principal Component Scatter (PC1–PC2)")
+        plt.xlabel("Principal Component 1")
+        plt.ylabel("Principal Component 2")
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+    
+    
+    # ----------------------------------------------------------------------
+    def plot_k_distance(self, distances_df: pd.DataFrame, dataset_label: str | None = None) -> None:
+        """Plot sorted k-distance values for DBSCAN elbow detection."""
+        if distances_df.empty:
+            print("No k-distance data to plot.")
+            return
+    
+        plt.figure(figsize=(8, 6))
+        plt.plot(distances_df["k_distance"])
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}K-distance plot (for DBSCAN elbow)")
+        plt.xlabel("Sample index (sorted)")
+        plt.ylabel("Distance to k-th neighbour")
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+    
+    
+    # ----------------------------------------------------------------------
+    def plot_dendrogram(self, linkage_matrix: np.ndarray, dataset_label: str | None = None) -> None:
+        """Plot hierarchical clustering dendrogram."""
+        if linkage_matrix.size == 0:
+            print("No linkage matrix to plot.")
+            return
+    
+        plt.figure(figsize=(10, 6))
+        dendrogram(linkage_matrix, color_threshold=0)
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}Hierarchical clustering dendrogram")
+        plt.xlabel("Samples")
+        plt.ylabel("Distance")
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+    
+    
+    # ----------------------------------------------------------------------
+    def plot_tsne_embedding(self, tsne_df: pd.DataFrame, dataset_label: str | None = None) -> None:
+        """Plot 2D t-SNE embedding."""
+        if tsne_df.empty:
+            print("No t-SNE embedding to plot.")
+            return
+    
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(x="Dim1", y="Dim2", data=tsne_df, s=50, alpha=0.7)
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}t-SNE embedding (2D)")
+        plt.xlabel("Dimension 1")
+        plt.ylabel("Dimension 2")
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+    
+    
+    # ----------------------------------------------------------------------
+    def plot_umap_embedding(self, umap_df: pd.DataFrame, dataset_label: str | None = None) -> None:
+        """Plot 2D UMAP embedding."""
+        if umap_df.empty:
+            print("No UMAP embedding to plot.")
+            return
+    
+        plt.figure(figsize=(8, 6))
+        sns.scatterplot(x="UMAP1", y="UMAP2", data=umap_df, s=50, alpha=0.7)
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}UMAP embedding (2D)")
+        plt.xlabel("UMAP1")
+        plt.ylabel("UMAP2")
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+    
