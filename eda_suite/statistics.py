@@ -1,7 +1,11 @@
 import pandas as pd
-import scipy.stats as stats
-
+import numpy as np
+from typing import Optional, List
+from scipy import stats
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 class StatisticsCalculator:
+    
     """Performs statistical calculations on the DataFrame."""
 
     def __init__(self, dataframe: pd.DataFrame):
