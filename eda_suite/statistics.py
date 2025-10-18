@@ -41,33 +41,25 @@ class StatisticsCalculator:
             records.append({"Feature": col, "p_value": p, "k2": k2})
         return pd.DataFrame.from_records(records)
 
-    def compute_covariance_matrix(self, df: pd.DataFrame) -> pd.DataFrame:
+    def get_covariance_matrix(self, columns: list[str] | None = None) -> pd.DataFrame:
         """
-        Compute the covariance matrix for numerical columns.
-
-        Args:
-            df: The DataFrame containing numerical features.
-
-        Returns:
-            DataFrame: Covariance matrix.
+        Returns the covariance matrix for numerical columns.
         """
-        numeric_df = df.select_dtypes(include="number")
-        cov_matrix = numeric_df.cov()
-        return cov_matrix
-
+        cols = columns or self._numerical_cols
+        if len(cols) == 0:
+            return pd.DataFrame()
+        return self._df[cols].cov()
+    
     def summarize_covariance(self, cov_matrix: pd.DataFrame) -> pd.DataFrame:
         """
-        Generate summary statistics of covariance magnitudes.
-
-        Returns:
-            Summary DataFrame with mean, median, and std of off-diagonal covariances.
+        Summarise covariance magnitudes (mean, median, std of off-diagonals).
         """
         import numpy as np
-        # Extract off-diagonal values only
+        if cov_matrix.empty:
+            return pd.DataFrame([{"mean_covariance": np.nan, "median_covariance": np.nan, "std_covariance": np.nan}])
         off_diag = cov_matrix.values[np.triu_indices_from(cov_matrix, k=1)]
-        summary = {
+        return pd.DataFrame([{
             "mean_covariance": off_diag.mean(),
             "median_covariance": np.median(off_diag),
             "std_covariance": off_diag.std()
-        }
-        return pd.DataFrame([summary])
+        }])
