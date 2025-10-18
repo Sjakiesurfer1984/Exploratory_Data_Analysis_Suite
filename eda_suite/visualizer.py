@@ -79,7 +79,7 @@ class Visualizer:
         # Add the completed image buffer to our cache list.
         self._plot_cache.append(img_buffer)
 
-    def plot_distribution(self, column_names: Union[str, List[str]]):
+    def plot_distribution(self, columns: Union[str, List[str]]):
         """
         Plots the distribution of a single column or multiple columns.
         
@@ -89,10 +89,10 @@ class Visualizer:
         """
         # Standardise the input: if a single string is provided, wrap it in a list.
         # This allows the rest of the function to operate on a list consistently.
-        if isinstance(column_names, str):
-            columns_to_plot = [column_names]
+        if isinstance(columns, str):
+            columns_to_plot = [columns]
         else:
-            columns_to_plot = column_names
+            columns_to_plot = columns
 
         # Loop through each requested column and generate a separate plot.
         for col_name in columns_to_plot:
