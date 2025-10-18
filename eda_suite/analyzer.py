@@ -7,7 +7,7 @@
 # and ReportGenerator.
 #
 # Author: Tim Vos
-# Last Modified: 17 October 2025
+# Last Modified: 18 October 2025
 # ==============================================================================
 
 from __future__ import annotations
@@ -233,22 +233,39 @@ class EDAAnalyzer:
         print(f"--- Plotting {method.capitalize()} Correlation Matrix ---")
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
 
-    def plot_covariance_matrix(self, df: pd.DataFrame) -> None:
+    # ----------------------------------------------------------------------
+    # Covariance matrix methods
+    # ----------------------------------------------------------------------
+    
+    def show_covariance_summary(self, columns: Optional[list[str]] = None) -> None:
         """
-        Compute and plot the covariance matrix for the given dataset.
+        Print covariance summary statistics (mean, median, std) for numerical features.
         """
-        cov = self.stats.compute_covariance_matrix(df)
-        self.visualizer.plot_covariance_heatmap(cov, title="Covariance Matrix")
-        return cov
-
-    def show_covariance_summary(self, df: pd.DataFrame) -> None:
-        """
-        Print covariance statistics (mean, median, std) for diagnostic purposes.
-        """
-        cov = self.stats.compute_covariance_matrix(df)
-        summary = self.stats.summarize_covariance(cov)
-        print("\n📊 Covariance Summary:")
+        print("--- Covariance Summary ---")
+        cov = self._stats.get_covariance_matrix(columns)
+        if cov.empty:
+            print("No numerical columns available for covariance analysis.\n")
+            return
+    
+        summary = self._stats.summarize_covariance(cov)
         print(summary.to_string(index=False))
+        print("-------------------------------------------\n")
+    
+    def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
+        """
+        Plot a covariance heatmap using the Visualizer.
+    
+        Args:
+            columns (list[str] | None): Optional subset of columns to include.
+        """
+        print("--- Plotting Covariance Matrix ---")
+        cov = self._stats.get_covariance_matrix(columns)
+        if cov.empty:
+            print("No numerical columns available for covariance plot.\n")
+            return
+    
+        self._visualizer.plot_covariance_heatmap(cov)
+
     # ==========================================================================
     # SCHEMA METHODS
     # ==========================================================================
