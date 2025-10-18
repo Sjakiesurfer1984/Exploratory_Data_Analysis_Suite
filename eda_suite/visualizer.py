@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from scipy.cluster.hierarchy import dendrogram
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Union
 import io 
 if TYPE_CHECKING:
     from .schema import SchemaManager
