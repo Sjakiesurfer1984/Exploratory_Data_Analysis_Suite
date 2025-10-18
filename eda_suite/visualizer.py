@@ -12,6 +12,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from scipy.cluster.hierarchy import dendrogram
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .schema import SchemaManager
 
 
 class Visualizer:
@@ -22,7 +25,7 @@ class Visualizer:
     automatically caches figures in memory for report generation.
     """
 
-    def __init__(self, dataframe: pd.DataFrame, schema_manager: SchemaManager):
+    def __init__(self, dataframe: pd.DataFrame, schema_manager: "SchemaManager"):
         self._df = dataframe
         self._schema = schema_manager
         self._plot_cache: List[io.BytesIO] = []
@@ -244,7 +247,7 @@ class Visualizer:
             cbar=True
         )
     
-        # ✅ Single clean title — sentence case and prefixed dataset label
+        # Single clean title — sentence case and prefixed dataset label
         plt.title(f"{title_prefix}{method.capitalize()} correlation matrix")
     
         plt.xticks(rotation=45, ha="right")
