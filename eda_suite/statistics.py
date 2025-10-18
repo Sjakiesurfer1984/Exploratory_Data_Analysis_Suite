@@ -44,12 +44,22 @@ class StatisticsCalculator:
     def get_covariance_matrix(self, columns: list[str] | None = None) -> pd.DataFrame:
         """
         Returns the covariance matrix for numerical columns.
+        If 'columns' is provided, restrict to that subset.
         """
-        cols = columns or self._numerical_cols
-        if len(cols) == 0:
-            return pd.DataFrame()
-        return self._df[cols].cov()
+        # Filter for numeric dtypes
+        numeric_df = self._df.select_dtypes(include=["number"])
     
+        # If user passes columns, subset intersection
+        if columns is not None:
+            valid_cols = [c for c in columns if c in numeric_df.columns]
+            numeric_df = numeric_df[valid_cols]
+    
+        # Return empty if nothing left
+        if numeric_df.empty:
+            return pd.DataFrame()
+    
+        return numeric_df.cov()
+
     def summarize_covariance(self, cov_matrix: pd.DataFrame) -> pd.DataFrame:
         """
         Summarise covariance magnitudes (mean, median, std of off-diagonals).
