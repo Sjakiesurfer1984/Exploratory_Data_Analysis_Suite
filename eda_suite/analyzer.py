@@ -215,19 +215,29 @@ class EDAAnalyzer:
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
-    def plot_correlation_matrix(self, columns: Optional[list[str]] = None, method: str = "pearson", dataset_label=self.name) -> None:
+    def plot_correlation_matrix(
+        self,
+        columns: Optional[list[str]] = None,
+        method: str = "pearson",
+        dataset_label: Optional[str] = None
+    ) -> None:
         """
         Plot a correlation heatmap using the Visualiser.
-
-        Args:
-            columns (list[str] | None): Subset of columns to include.
-            method (str): Correlation method ('pearson', 'spearman', 'kendall').
-
-        Example:
-            analyzer.plot_correlation_matrix(method="spearman")
+    
+        Delegates computation to the StatisticsCalculator
+        and plotting to the Visualiser.
         """
-        print(f"--- Plotting {method.capitalize()} Correlation Matrix ({self.name}) ---")
-        self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
+        # Default to analyzer name if label not given
+        if dataset_label is None:
+            dataset_label = self.name
+    
+        print(f"--- Plotting {method.capitalize()} Correlation Matrix ({dataset_label}) ---")
+        self._visualizer.plot_correlation_matrix(
+            stats_calculator=self._stats,
+            columns=columns,
+            method=method,
+            dataset_label=dataset_label,
+        )
     
     def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
         print(f"--- Plotting covariance matrix ({self.name}) ---")
