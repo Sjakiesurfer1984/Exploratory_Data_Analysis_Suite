@@ -197,21 +197,21 @@ class EDAAnalyzer:
     def show_descriptive_stats(self) -> None:
         """Print classic descriptive statistics (mean, std, quartiles)."""
         df_stats = self._stats.get_descriptive_stats()
-        print("--- Descriptive Statistics ({self.name} ---")
+        print(f"--- Descriptive Statistics {self.name} ---")
         print(df_stats.to_string())
         print("-----------------------------------------\n")
 
     def show_skewness(self, columns: Optional[list[str]] = None) -> None:
         """Print skewness for each numerical feature."""
         df_skew = self._stats.get_skewness(columns)
-        print("--- Skewness of Numerical Columns ({self.name} ---")
+        print(f"--- Skewness of Numerical Columns {self.name} ---")
         print(df_skew.to_string(index=False))
         print("------------------------------------\n")
 
     def show_normality(self, columns: Optional[list[str]] = None) -> None:
         """Perform D’Agostino–Pearson normality test and print results."""
         df_norm = self._stats.get_normality(columns)
-        print("--- Normality Test (D’Agostino–Pearson) ({self.name} ---")
+        print(f"--- Normality Test (D’Agostino–Pearson) {self.name} ---")
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
@@ -245,7 +245,7 @@ class EDAAnalyzer:
         """
         Print covariance summary statistics (mean, median, std) for numerical features.
         """
-        print("--- Covariance Summary {self.name}---")
+        print(f"--- Covariance Summary {self.name}---")
         cov = self._stats.get_covariance_matrix(columns)
         if cov.empty:
             print("No numerical columns available for covariance analysis.\n")
@@ -275,12 +275,12 @@ class EDAAnalyzer:
 
     def plot_distribution(self, column_names: Union[str, list[str]]) -> None:
         """Plot distributions (histogram or bar) for one or more columns."""
-        print("--- Plotting Distribution(s) {self.name}---")
+        print(f"--- Plotting Distribution(s) {self.name}---")
         self._visualizer.plot_distribution(column_names, dataset_label=self.name)
 
     def plot_scatter(self, x_col: str, y_col: str) -> None:
         """Plot a scatter chart showing the relationship between two features."""
-        print("--- Plotting Scatter Plot {self.name}---")
+        print(f"--- Plotting Scatter Plot {self.name}---")
         self._visualizer.plot_scatter(x_col, y_col, dataset_label=self.name)
 
     def plot_boxplots(
@@ -295,7 +295,7 @@ class EDAAnalyzer:
             numerical_cols (str | list[str]): Columns to plot.
             group_by_col (str | None): Optional categorical column for grouping.
         """
-        print("--- Plotting Box Plot(s) {self.name}---")
+        print(f"--- Plotting Box Plot(s) {self.name}---")
         self._visualizer.plot_boxplots(numerical_cols, group_by_col, dataset_label=self.name)
 
     def plot_pairplot(
@@ -313,7 +313,7 @@ class EDAAnalyzer:
         Example:
             analyzer.plot_pairplot(columns=["Fresh", "Milk", "Grocery"], hue="Region")
         """
-        print("--- Plotting Pair Plot(s) {self.name}---")
+        print(f"--- Plotting Pair Plot(s) {self.name}---")
         self._visualizer.plot_pairplot(columns=columns, hue=hue, dataset_label=self.name)
 
     # ==========================================================================
