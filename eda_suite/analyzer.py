@@ -215,7 +215,7 @@ class EDAAnalyzer:
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
-    def plot_correlation_matrix(self, columns: Optional[list[str]] = None, method: str = "pearson") -> None:
+    def plot_correlation_matrix(self, columns: Optional[list[str]] = None, method: str = "pearson", dataset_label=self.name) -> None:
         """
         Plot a correlation heatmap using the Visualiser.
 
