@@ -215,11 +215,14 @@ class EDAAnalyzer:
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
-    def plot_correlation_matrix(
-        self,
-        columns: Optional[list[str]] = None,
-        method: str = "pearson",
-    ) -> None:
+    def plot_correlation_matrix(self, columns: Optional[list[str]] = None, method: str = "pearson") -> None:
+        print(f"--- Plotting {method.capitalize()} correlation matrix ({self.name}) ---")
+        self._visualizer.plot_correlation_matrix(
+            self._stats,
+            columns=columns,
+            method=method,
+            dataset_label=self.name
+        )-> None:
         """
         Plot a correlation heatmap using the Visualiser.
 
@@ -234,19 +237,13 @@ class EDAAnalyzer:
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
     
     def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
-        """
-        Plot a covariance heatmap using the Visualizer.
-    
-        Args:
-            columns (list[str] | None): Optional subset of columns to include.
-        """
-        print("--- Plotting Covariance Matrix ({self.name}---")
+        print(f"--- Plotting covariance matrix ({self.name}) ---")
         cov = self._stats.get_covariance_matrix(columns)
         if cov.empty:
             print("No numerical columns available for covariance plot.\n")
             return
-    
-        self._visualizer.plot_covariance_heatmap(cov)
+        self._visualizer.plot_covariance_heatmap(cov, dataset_label=self.name)
+
     # ----------------------------------------------------------------------
     # Covariance matrix methods
     # ----------------------------------------------------------------------
@@ -255,7 +252,7 @@ class EDAAnalyzer:
         """
         Print covariance summary statistics (mean, median, std) for numerical features.
         """
-        print("--- Covariance Summary ({self.name}---")
+        print("--- Covariance Summary {self.name}---")
         cov = self._stats.get_covariance_matrix(columns)
         if cov.empty:
             print("No numerical columns available for covariance analysis.\n")
@@ -285,13 +282,13 @@ class EDAAnalyzer:
 
     def plot_distribution(self, column_names: Union[str, list[str]]) -> None:
         """Plot distributions (histogram or bar) for one or more columns."""
-        print("--- Plotting Distribution(s) ({self.name}---")
-        self._visualizer.plot_distribution(column_names)
+        print("--- Plotting Distribution(s) {self.name}---")
+        self._visualizer.plot_distribution(column_names, dataset_label=self.name)
 
     def plot_scatter(self, x_col: str, y_col: str) -> None:
         """Plot a scatter chart showing the relationship between two features."""
-        print("--- Plotting Scatter Plot ({self.name}---")
-        self._visualizer.plot_scatter(x_col, y_col)
+        print("--- Plotting Scatter Plot {self.name}---")
+        self._visualizer.plot_scatter(x_col, y_col, dataset_label=self.name)
 
     def plot_boxplots(
         self,
@@ -305,8 +302,8 @@ class EDAAnalyzer:
             numerical_cols (str | list[str]): Columns to plot.
             group_by_col (str | None): Optional categorical column for grouping.
         """
-        print("--- Plotting Box Plot(s) ({self.name}---")
-        self._visualizer.plot_boxplots(numerical_cols, group_by_col)
+        print("--- Plotting Box Plot(s) {self.name}---")
+        self._visualizer.plot_boxplots(numerical_cols, group_by_col, dataset_label=self.name)
 
     def plot_pairplot(
         self,
@@ -323,8 +320,8 @@ class EDAAnalyzer:
         Example:
             analyzer.plot_pairplot(columns=["Fresh", "Milk", "Grocery"], hue="Region")
         """
-        print("--- Plotting Pair Plot(s) ({self.name}---")
-        self._visualizer.plot_pairplot(columns=columns, hue=hue)
+        print("--- Plotting Pair Plot(s) {self.name}---")
+        self._visualizer.plot_pairplot(columns=columns, hue=hue, dataset_label=self.name)
 
     # ==========================================================================
     # CLEANER METHODS
