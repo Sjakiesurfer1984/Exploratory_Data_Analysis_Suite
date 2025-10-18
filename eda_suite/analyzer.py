@@ -197,21 +197,21 @@ class EDAAnalyzer:
     def show_descriptive_stats(self) -> None:
         """Print classic descriptive statistics (mean, std, quartiles)."""
         df_stats = self._stats.get_descriptive_stats()
-        print("--- Descriptive Statistics ---")
+        print("--- Descriptive Statistics ({self.name} ---")
         print(df_stats.to_string())
         print("-----------------------------------------\n")
 
     def show_skewness(self, columns: Optional[list[str]] = None) -> None:
         """Print skewness for each numerical feature."""
         df_skew = self._stats.get_skewness(columns)
-        print("--- Skewness of Numerical Columns ---")
+        print("--- Skewness of Numerical Columns ({self.name} ---")
         print(df_skew.to_string(index=False))
         print("------------------------------------\n")
 
     def show_normality(self, columns: Optional[list[str]] = None) -> None:
         """Perform D’Agostino–Pearson normality test and print results."""
         df_norm = self._stats.get_normality(columns)
-        print("--- Normality Test (D’Agostino–Pearson) ---")
+        print("--- Normality Test (D’Agostino–Pearson) ({self.name} ---")
         print(df_norm.to_string(index=False))
         print("-------------------------------------------\n")
 
@@ -230,7 +230,7 @@ class EDAAnalyzer:
         Example:
             analyzer.plot_correlation_matrix(method="spearman")
         """
-        print(f"--- Plotting {method.capitalize()} Correlation Matrix ---")
+        print(f"--- Plotting {method.capitalize()} Correlation Matrix {self.name} ---")
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
     
     def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
@@ -240,7 +240,7 @@ class EDAAnalyzer:
         Args:
             columns (list[str] | None): Optional subset of columns to include.
         """
-        print("--- Plotting Covariance Matrix ---")
+        print("--- Plotting Covariance Matrix ({self.name}---")
         cov = self._stats.get_covariance_matrix(columns)
         if cov.empty:
             print("No numerical columns available for covariance plot.\n")
@@ -255,7 +255,7 @@ class EDAAnalyzer:
         """
         Print covariance summary statistics (mean, median, std) for numerical features.
         """
-        print("--- Covariance Summary ---")
+        print("--- Covariance Summary ({self.name}---")
         cov = self._stats.get_covariance_matrix(columns)
         if cov.empty:
             print("No numerical columns available for covariance analysis.\n")
@@ -285,12 +285,12 @@ class EDAAnalyzer:
 
     def plot_distribution(self, column_names: Union[str, list[str]]) -> None:
         """Plot distributions (histogram or bar) for one or more columns."""
-        print("--- Plotting Distribution(s) ---")
+        print("--- Plotting Distribution(s) ({self.name}---")
         self._visualizer.plot_distribution(column_names)
 
     def plot_scatter(self, x_col: str, y_col: str) -> None:
         """Plot a scatter chart showing the relationship between two features."""
-        print("--- Plotting Scatter Plot ---")
+        print("--- Plotting Scatter Plot ({self.name}---")
         self._visualizer.plot_scatter(x_col, y_col)
 
     def plot_boxplots(
@@ -305,7 +305,7 @@ class EDAAnalyzer:
             numerical_cols (str | list[str]): Columns to plot.
             group_by_col (str | None): Optional categorical column for grouping.
         """
-        print("--- Plotting Box Plot(s) ---")
+        print("--- Plotting Box Plot(s) ({self.name}---")
         self._visualizer.plot_boxplots(numerical_cols, group_by_col)
 
     def plot_pairplot(
@@ -323,6 +323,7 @@ class EDAAnalyzer:
         Example:
             analyzer.plot_pairplot(columns=["Fresh", "Milk", "Grocery"], hue="Region")
         """
+        print("--- Plotting Pair Plot(s) ({self.name}---")
         self._visualizer.plot_pairplot(columns=columns, hue=hue)
 
     # ==========================================================================
