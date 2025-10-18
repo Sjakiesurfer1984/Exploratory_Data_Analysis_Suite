@@ -1,9 +1,11 @@
-import pandas as pd
-import numpy as np
-from typing import Optional, List
-from scipy import stats
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.neighbors import NearestNeighbors
+from scipy.cluster.hierarchy import linkage
+from sklearn.manifold import TSNE
+import pandas as pd
+import numpy as np
+
 class StatisticsCalculator:
     
     """Performs statistical calculations on the DataFrame."""
@@ -120,3 +122,173 @@ class StatisticsCalculator:
         })
 
         return df_pca
+
+# ==============================================================================
+# Additional statistical computations for PCA, clustering, and embeddings
+# ==============================================================================
+    
+    def get_pca_scatter_data(
+        self,
+        columns: list[str],
+        n_components: int = 2,
+        scale: bool = True
+    ) -> pd.DataFrame:
+        """
+        Compute PCA for 2D scatter visualisation.
+        Returns a DataFrame containing the first two principal components.
+    
+        Args:
+            columns (list[str]): Columns to include.
+            n_components (int): Number of principal components to compute.
+            scale (bool): Whether to standardise features before PCA.
+    
+        Returns:
+            pd.DataFrame: PC scores (columns = PC1, PC2, ...)
+        """
+        numeric_df = self._df[columns].select_dtypes(include=["number"]).dropna()
+        if numeric_df.empty:
+            print("No numeric data available for PCA scatter.")
+            return pd.DataFrame()
+    
+        X = numeric_df.values
+        if scale:
+            X = StandardScaler().fit_transform(X)
+    
+        pca = PCA(n_components=n_components)
+        pcs = pca.fit_transform(X)
+        pc_names = [f"PC{i+1}" for i in range(n_components)]
+    
+        return pd.DataFrame(pcs, columns=pc_names, index=numeric_df.index)
+    
+    
+    # ----------------------------------------------------------------------
+    def get_k_distance(
+        self,
+        columns: list[str],
+        k: int = 4
+    ) -> pd.DataFrame:
+        """
+        Compute the distance to each sample's k-th nearest neighbour.
+        Used for DBSCAN elbow plot diagnostics.
+    
+        Args:
+            columns (list[str]): Numerical columns to include.
+            k (int): Neighbour rank (e.g., 4 for 4th nearest).
+    
+        Returns:
+            pd.DataFrame: Sorted distances.
+        """
+        numeric_df = self._df[columns].select_dtypes(include=["number"]).dropna()
+        if numeric_df.empty:
+            print("No numeric data for k-distance calculation.")
+            return pd.DataFrame()
+    
+        neigh = NearestNeighbors(n_neighbors=k)
+        neigh.fit(numeric_df)
+        distances, _ = neigh.kneighbors(numeric_df)
+        k_distances = np.sort(distances[:, k - 1])
+    
+        return pd.DataFrame({"k_distance": k_distances})
+    
+    
+    # ----------------------------------------------------------------------
+    def get_hierarchical_linkage(
+        self,
+        columns: list[str],
+        method: str = "ward"
+    ) -> np.ndarray:
+        """
+        Compute the linkage matrix for hierarchical clustering dendrograms.
+    
+        Args:
+            columns (list[str]): Numerical columns to include.
+            method (str): Linkage method (ward, average, complete, single).
+    
+        Returns:
+            np.ndarray: Linkage matrix.
+        """
+        numeric_df = self._df[columns].select_dtypes(include=["number"]).dropna()
+        if numeric_df.empty:
+            print("No numeric data for hierarchical clustering.")
+            return np.array([])
+    
+        return linkage(numeric_df, method=method)
+    
+    
+    # ----------------------------------------------------------------------
+    def get_tsne_embedding(
+        self,
+        columns: list[str],
+        perplexity: int = 30,
+        n_components: int = 2,
+        random_state: int = 42
+    ) -> pd.DataFrame:
+        """
+        Compute a t-SNE embedding for non-linear structure visualisation.
+    
+        Args:
+            columns (list[str]): Numerical columns.
+            perplexity (int): Balance between local/global structure.
+            n_components (int): Usually 2 for visualisation.
+            random_state (int): Reproducibility seed.
+    
+        Returns:
+            pd.DataFrame: t-SNE coordinates.
+        """
+        numeric_df = self._df[columns].select_dtypes(include=["number"]).dropna()
+        if numeric_df.empty:
+            print("No numeric data for t-SNE embedding.")
+            return pd.DataFrame()
+    
+        tsne = TSNE(
+            n_components=n_components,
+            perplexity=perplexity,
+            random_state=random_state,
+            learning_rate="auto",
+            init="pca"
+        )
+        embedding = tsne.fit_transform(numeric_df.values)
+        colnames = [f"Dim{i+1}" for i in range(n_components)]
+        return pd.DataFrame(embedding, columns=colnames, index=numeric_df.index)
+    
+    
+    # ----------------------------------------------------------------------
+    def get_umap_embedding(
+        self,
+        columns: list[str],
+        n_neighbors: int = 15,
+        min_dist: float = 0.1,
+        random_state: int = 42
+    ) -> pd.DataFrame:
+        """
+        Compute UMAP embedding for global structure visualisation.
+    
+        Args:
+            columns (list[str]): Numerical columns to include.
+            n_neighbors (int): Local neighbourhood size.
+            min_dist (float): Controls tightness of clusters.
+            random_state (int): Random seed.
+    
+        Returns:
+            pd.DataFrame: UMAP embedding (2D).
+        """
+        try:
+            import umap
+        except ImportError:
+            print("UMAP not installed. Run: pip install umap-learn")
+            return pd.DataFrame()
+    
+        numeric_df = self._df[columns].select_dtypes(include=["number"]).dropna()
+        if numeric_df.empty:
+            print("No numeric data for UMAP embedding.")
+            return pd.DataFrame()
+    
+        reducer = umap.UMAP(
+            n_neighbors=n_neighbors,
+            min_dist=min_dist,
+            random_state=random_state
+        )
+        embedding = reducer.fit_transform(numeric_df.values)
+        colnames = ["UMAP1", "UMAP2"]
+        return pd.DataFrame(embedding, columns=colnames, index=numeric_df.index)
+    
