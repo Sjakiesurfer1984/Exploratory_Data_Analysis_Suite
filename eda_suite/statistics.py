@@ -73,3 +73,46 @@ class StatisticsCalculator:
             "median_covariance": np.median(off_diag),
             "std_covariance": off_diag.std()
         }])
+
+    def get_pca_components(
+        self,
+        columns: list[str] | None = None,
+        n_components: int | None = None,
+        scale: bool = True
+    ) -> pd.DataFrame:
+        """
+        Perform PCA and return explained variance ratios.
+
+        Args:
+            columns (list[str] | None): Columns to include. Defaults to all numeric.
+            n_components (int | None): Number of components to compute.
+            scale (bool): Whether to standardise data before PCA.
+
+        Returns:
+            pd.DataFrame: Table with PC index, explained variance, and cumulative ratio.
+        """
+        numeric_df = self._df.select_dtypes(include=["number"])
+        if columns is not None:
+            numeric_df = numeric_df[columns]
+
+        if numeric_df.empty:
+            print("No numerical columns available for PCA.")
+            return pd.DataFrame()
+
+        X = numeric_df.values
+        if scale:
+            X = StandardScaler().fit_transform(X)
+
+        pca = PCA(n_components=n_components)
+        pca.fit(X)
+
+        explained_var = pca.explained_variance_ratio_
+        cumulative_var = np.cumsum(explained_var)
+
+        df_pca = pd.DataFrame({
+            "Component": np.arange(1, len(explained_var) + 1),
+            "ExplainedVarianceRatio": explained_var,
+            "CumulativeVariance": cumulative_var
+        })
+
+        return df_pca
