@@ -232,16 +232,30 @@ class Visualizer:
         if corr.empty:
             print("No numerical columns for correlation plot.")
             return
-
+    
+        # Prefix like "Raw data: " or "Log-transformed data: "
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+    
         plt.figure(figsize=(10, 8))
-        sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", square=True, cbar=True)
-        plt.title(self._format_title(dataset_label, f"{method} correlation matrix"))
+        sns.heatmap(
+            corr,
+            annot=True,
+            fmt=".2f",
+            cmap="coolwarm",
+            square=True,
+            cbar=True
+        )
+    
+        # ✅ Single clean title — sentence case and prefixed dataset label
+        plt.title(f"{title_prefix}{method.capitalize()} correlation matrix")
+    
         plt.xticks(rotation=45, ha="right")
         plt.yticks(rotation=0)
         plt.tight_layout()
         self._save_plot_to_cache()
         plt.show()
         plt.close()
+
 
     def plot_covariance_heatmap(
         self,
