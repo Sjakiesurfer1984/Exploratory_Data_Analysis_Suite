@@ -76,7 +76,7 @@ class Visualizer:
     # Core plotting functions
     # ==========================================================================
 
-    def plot_distribution(self, columns: Union[str, List[str]], dataset_label: Optional[str] = None):
+    def plot_distribution(self, columns: Union[str, List[str]], dataset_label: Optional[str] = None) -> None:
         """Plot distributions for numerical or categorical columns."""
         columns_to_plot = [columns] if isinstance(columns, str) else columns
 
@@ -138,7 +138,7 @@ class Visualizer:
         numerical_cols: Union[str, List[str]],
         group_by_col: Optional[str] = None,
         dataset_label: Optional[str] = None,
-    ):
+    ) -> None:
         """Plot single or grouped boxplots."""
         cols = [numerical_cols] if isinstance(numerical_cols, str) else numerical_cols
         orig_cols = [self._schema.get_original_name(c) for c in cols]
@@ -170,12 +170,49 @@ class Visualizer:
             plt.show()
             plt.close()
 
+    def plot_grouped_boxgrid(
+    self,
+    numerical_cols: list[str],
+    group_col: str,
+    dataset_label: str | None = None,
+    ) -> None:
+        """
+        Plot a grid of boxplots showing multiple numerical columns grouped by a categorical variable.
+    
+        Args:
+            numerical_cols (list[str]): Numerical columns to plot.
+            group_col (str): Categorical column to group by.
+            dataset_label (str | None): Optional label (e.g. 'Raw data') for the title.
+        """
+        if not numerical_cols:
+            print("No numerical columns provided for grouped boxplot grid.")
+            return
+    
+        df_long = self._df.melt(
+            id_vars=group_col, 
+            value_vars=numerical_cols, 
+            var_name="Feature", 
+            value_name="Value"
+        )
+    
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.figure(figsize=(12, 7))
+        sns.boxplot(data=df_long, x="Feature", y="Value", hue=group_col)
+        plt.title(f"{title_prefix}Distributions of features by {group_col.lower()}")
+        plt.xlabel("Feature")
+        plt.ylabel("Value")
+        plt.xticks(rotation=45)
+        plt.legend(title=group_col)
+        plt.tight_layout()
+        self._save_plot_to_cache()
+        plt.show()
+
     def plot_pairplot(
         self,
         columns: Optional[List[str]] = None,
         hue: Optional[str] = None,
         dataset_label: Optional[str] = None,
-    ):
+    ) -> None:
         """Create a pair plot (scatter-plot matrix)."""
         if columns is None:
             columns = self._df.select_dtypes(include=["number"]).columns
@@ -189,7 +226,7 @@ class Visualizer:
         columns: Optional[List[str]] = None,
         method: str = "pearson",
         dataset_label: Optional[str] = None,
-    ):
+    ) -> None:
         """Plot correlation matrix with automatic sentence-case title."""
         corr = stats_calculator.get_correlation_matrix(columns=columns, method=method)
         if corr.empty:
