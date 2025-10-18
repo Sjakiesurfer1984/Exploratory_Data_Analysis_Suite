@@ -263,4 +263,18 @@ class Visualizer:
         plt.show()
         plt.close()
 
+    def plot_covariance_heatmap(self, cov_matrix: pd.DataFrame, title: str = "Covariance Matrix") -> None:
+        """
+        Plot a heatmap of the covariance matrix.
+
+        Args:
+            cov_matrix: Covariance matrix DataFrame.
+            title: Plot title.
+        """
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cov_matrix, cmap="coolwarm", annot=False, square=True, cbar_kws={"label": "Covariance"})
+        plt.title(title)
+        plt.tight_layout()
+        plt.show()
+
 
