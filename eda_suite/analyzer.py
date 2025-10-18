@@ -233,6 +233,22 @@ class EDAAnalyzer:
         print(f"--- Plotting {method.capitalize()} Correlation Matrix ---")
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
 
+    def plot_covariance_matrix(self, df: pd.DataFrame) -> None:
+        """
+        Compute and plot the covariance matrix for the given dataset.
+        """
+        cov = self.stats.compute_covariance_matrix(df)
+        self.visualizer.plot_covariance_heatmap(cov, title="Covariance Matrix")
+        return cov
+
+    def show_covariance_summary(self, df: pd.DataFrame) -> None:
+        """
+        Print covariance statistics (mean, median, std) for diagnostic purposes.
+        """
+        cov = self.stats.compute_covariance_matrix(df)
+        summary = self.stats.summarize_covariance(cov)
+        print("\n📊 Covariance Summary:")
+        print(summary.to_string(index=False))
     # ==========================================================================
     # SCHEMA METHODS
     # ==========================================================================
