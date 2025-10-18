@@ -40,3 +40,34 @@ class StatisticsCalculator:
             k2, p = stats.normaltest(self._df[col].dropna())
             records.append({"Feature": col, "p_value": p, "k2": k2})
         return pd.DataFrame.from_records(records)
+
+    def compute_covariance_matrix(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Compute the covariance matrix for numerical columns.
+
+        Args:
+            df: The DataFrame containing numerical features.
+
+        Returns:
+            DataFrame: Covariance matrix.
+        """
+        numeric_df = df.select_dtypes(include="number")
+        cov_matrix = numeric_df.cov()
+        return cov_matrix
+
+    def summarize_covariance(self, cov_matrix: pd.DataFrame) -> pd.DataFrame:
+        """
+        Generate summary statistics of covariance magnitudes.
+
+        Returns:
+            Summary DataFrame with mean, median, and std of off-diagonal covariances.
+        """
+        import numpy as np
+        # Extract off-diagonal values only
+        off_diag = cov_matrix.values[np.triu_indices_from(cov_matrix, k=1)]
+        summary = {
+            "mean_covariance": off_diag.mean(),
+            "median_covariance": np.median(off_diag),
+            "std_covariance": off_diag.std()
+        }
+        return pd.DataFrame([summary])
