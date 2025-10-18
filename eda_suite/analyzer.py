@@ -333,6 +333,54 @@ class EDAAnalyzer:
             return
         self._visualizer.plot_pca_scree(pca_df, dataset_label=self.name)
 
+    # ==============================================================================
+    # Extended visualization orchestration methods
+    # ==============================================================================
+    
+    def plot_pca_scatter(self, columns: list[str] | None = None) -> None:
+        """Compute and plot PCA scatter (PC1 vs PC2)."""
+        print(f"--- Plotting PCA scatter ({self.name}) ---")
+        pca_df = self._stats.get_pca_scatter_data(columns=columns)
+        if pca_df.empty:
+            return
+        self._visualizer.plot_pca_scatter(pca_df, dataset_label=self.name)
+    
+    
+    def plot_k_distance(self, columns: list[str] | None = None, k: int = 4) -> None:
+        """Compute and plot k-distance curve."""
+        print(f"--- Plotting k-distance plot ({self.name}) ---")
+        distances_df = self._stats.get_k_distance(columns=columns, k=k)
+        if distances_df.empty:
+            return
+        self._visualizer.plot_k_distance(distances_df, dataset_label=self.name)
+    
+    
+    def plot_dendrogram(self, columns: list[str] | None = None, method: str = "ward") -> None:
+        """Compute and plot hierarchical clustering dendrogram."""
+        print(f"--- Plotting dendrogram ({self.name}) ---")
+        linkage_matrix = self._stats.get_hierarchical_linkage(columns=columns, method=method)
+        if linkage_matrix.size == 0:
+            return
+        self._visualizer.plot_dendrogram(linkage_matrix, dataset_label=self.name)
+    
+    
+    def plot_tsne(self, columns: list[str] | None = None) -> None:
+        """Compute and plot t-SNE embedding."""
+        print(f"--- Plotting t-SNE embedding ({self.name}) ---")
+        tsne_df = self._stats.get_tsne_embedding(columns=columns)
+        if tsne_df.empty:
+            return
+        self._visualizer.plot_tsne_embedding(tsne_df, dataset_label=self.name)
+    
+    
+    def plot_umap(self, columns: list[str] | None = None) -> None:
+        """Compute and plot UMAP embedding."""
+        print(f"--- Plotting UMAP embedding ({self.name}) ---")
+        umap_df = self._stats.get_umap_embedding(columns=columns)
+        if umap_df.empty:
+            return
+        self._visualizer.plot_umap_embedding(umap_df, dataset_label=self.name)
+    
     # ==========================================================================
     # CLEANER METHODS
     # ==========================================================================
