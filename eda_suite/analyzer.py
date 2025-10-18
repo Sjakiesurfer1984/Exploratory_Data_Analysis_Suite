@@ -232,7 +232,21 @@ class EDAAnalyzer:
         """
         print(f"--- Plotting {method.capitalize()} Correlation Matrix ---")
         self._visualizer.plot_correlation_matrix(self._stats, columns=columns, method=method)
-
+    
+    def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
+        """
+        Plot a covariance heatmap using the Visualizer.
+    
+        Args:
+            columns (list[str] | None): Optional subset of columns to include.
+        """
+        print("--- Plotting Covariance Matrix ---")
+        cov = self._stats.get_covariance_matrix(columns)
+        if cov.empty:
+            print("No numerical columns available for covariance plot.\n")
+            return
+    
+        self._visualizer.plot_covariance_heatmap(cov)
     # ----------------------------------------------------------------------
     # Covariance matrix methods
     # ----------------------------------------------------------------------
@@ -250,21 +264,6 @@ class EDAAnalyzer:
         summary = self._stats.summarize_covariance(cov)
         print(summary.to_string(index=False))
         print("-------------------------------------------\n")
-    
-    def plot_covariance_matrix(self, columns: Optional[list[str]] = None) -> None:
-        """
-        Plot a covariance heatmap using the Visualizer.
-    
-        Args:
-            columns (list[str] | None): Optional subset of columns to include.
-        """
-        print("--- Plotting Covariance Matrix ---")
-        cov = self._stats.get_covariance_matrix(columns)
-        if cov.empty:
-            print("No numerical columns available for covariance plot.\n")
-            return
-    
-        self._visualizer.plot_covariance_heatmap(cov)
 
     # ==========================================================================
     # SCHEMA METHODS
