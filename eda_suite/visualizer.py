@@ -266,15 +266,43 @@ class Visualizer:
     def plot_covariance_heatmap(self, cov_matrix: pd.DataFrame, title: str = "Covariance Matrix") -> None:
         """
         Plot a heatmap of the covariance matrix.
-
+    
+        Automatically adjusts annotation format depending on numeric magnitude.
+        Works across datasets with very small, moderate, or very large covariance values.
+    
         Args:
-            cov_matrix: Covariance matrix DataFrame.
-            title: Plot title.
+            cov_matrix (pd.DataFrame): Covariance matrix to plot.
+            title (str): Title for the plot.
         """
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+        import numpy as np
+    
+        if cov_matrix.empty:
+            print("Covariance matrix is empty. Skipping plot.")
+            return
+    
+        # Inspect absolute magnitude of values to select annotation format automatically
+        max_val = np.abs(cov_matrix.values).max()
+    
+        if max_val >= 1e6:
+            fmt = ".2e"  # scientific notation for very large numbers
+        elif max_val >= 1:
+            fmt = ".2f"  # normal decimal notation for moderate numbers
+        elif max_val >= 1e-3:
+            fmt = ".3f"  # more precision for small decimals
+        else:
+            fmt = ".2e"  # very small -> scientific again
+    
         plt.figure(figsize=(10, 8))
-        sns.heatmap(cov_matrix, cmap="coolwarm", annot=False, square=True, cbar_kws={"label": "Covariance"})
+        sns.heatmap(
+            cov_matrix,
+            annot=True,
+            fmt=fmt,
+            cmap="coolwarm",
+            square=True,
+            cbar_kws={"label": "Covariance"},
+        )
         plt.title(title)
         plt.tight_layout()
         plt.show()
-
-
