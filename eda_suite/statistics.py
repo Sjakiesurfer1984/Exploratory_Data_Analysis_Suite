@@ -294,22 +294,34 @@ class StatisticsCalculator:
         colnames = ["UMAP1", "UMAP2"]
         return pd.DataFrame(embedding, columns=colnames, index=numeric_df.index)
   
-    def compute_elbow_curve(X: np.ndarray, k_range: range = range(1, 11), random_state: int = 42) -> pd.DataFrame:
+    # ----------------------------------------------------------------------
+    # K-Means Elbow Curve
+    # ----------------------------------------------------------------------
+    from sklearn.cluster import KMeans
+    
+    def compute_elbow_curve(
+        self,
+        X: np.ndarray,
+        k_range: range = range(1, 11),
+        random_state: int = 42
+    ) -> pd.DataFrame:
         """
-        Compute K-Means inertia for different k values (Elbow method).
+        Compute K-Means inertia (within-cluster sum of squares) for a range of k values.
     
         Args:
-            X (np.ndarray): Scaled feature matrix.
-            k_range (range): Range of cluster numbers to test.
-            random_state (int): For reproducibility.
+            X (np.ndarray): 2D array of scaled numerical features.
+            k_range (range): Range of k (number of clusters) to evaluate.
+            random_state (int): Seed for reproducibility.
     
         Returns:
-            pd.DataFrame: Table with k and inertia values.
+            pd.DataFrame: DataFrame with columns ['k', 'inertia'].
         """
         results = []
         for k in k_range:
-            kmeans = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+            kmeans = KMeans(n_clusters=int(k), random_state=random_state, n_init=10)
             kmeans.fit(X)
             results.append({"k": k, "inertia": kmeans.inertia_})
+        
         return pd.DataFrame(results)
+
 
