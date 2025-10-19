@@ -391,10 +391,19 @@ class EDAAnalyzer:
         self._visualizer.plot_umap_embedding(umap_df, dataset_label=self.name)
 
     def plot_elbow(self, columns: Optional[list[str]] = None, k_range: range = range(1, 11)) -> None:
-        """Compute and plot the K-Means elbow curve."""
+        """
+        Compute and plot the K-Means elbow curve, and print the optimal k suggestion.
+        """
         print(f"--- Computing K-Means elbow curve ({self.name}) ---")
+    
         X = self._profiler._df[columns].select_dtypes(include=["number"]).dropna().values
         elbow_df = self._stats.compute_elbow_curve(X, k_range)
+    
+        # NEW: auto-detect elbow
+        optimal_k = self._stats.elbow_by_second_diff(elbow_df["k"], elbow_df["inertia"])
+        print(f"Suggested optimal number of clusters (via curvature): k = {optimal_k}")
+    
+        # Plot it
         self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.name)
     
     # ==========================================================================
