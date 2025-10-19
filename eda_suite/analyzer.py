@@ -7,7 +7,6 @@
 # and ReportGenerator.
 #
 # Author: Tim Vos
-# Last Modified: 18 October 2025
 # ==============================================================================
 
 from __future__ import annotations
@@ -390,6 +389,13 @@ class EDAAnalyzer:
         if umap_df.empty:
             return
         self._visualizer.plot_umap_embedding(umap_df, dataset_label=self.name)
+
+    def plot_elbow(self, columns: Optional[list[str]] = None, k_range: range = range(1, 11)) -> None:
+        """Compute and plot the K-Means elbow curve."""
+        print(f"--- Computing K-Means elbow curve ({self.name}) ---")
+        X = self._profiler._df[columns].select_dtypes(include=["number"]).dropna().values
+        elbow_df = self._stats.compute_elbow_curve(X, k_range)
+        self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.name)
     
     # ==========================================================================
     # CLEANER METHODS
@@ -511,4 +517,7 @@ class EDAAnalyzer:
             report_generator=report_generator,
             name=name,
         )
+
+
+
 
