@@ -207,6 +207,7 @@ class Visualizer:
         plt.tight_layout()
         self._save_plot_to_cache()
         plt.show()
+        plt.close()
 
     def plot_pairplot(
         self,
@@ -219,7 +220,9 @@ class Visualizer:
             columns = self._df.select_dtypes(include=["number"]).columns
         g = sns.pairplot(self._df[columns], hue=hue, diag_kind="kde", corner=True)
         g.fig.suptitle(self._format_title(dataset_label, "pair plot of selected features"), y=1.02)
+        self._save_plot_to_cache()
         plt.show()
+        plt.close()
 
     def plot_correlation_matrix(
         self,
@@ -340,6 +343,7 @@ class Visualizer:
         plt.tight_layout()
         self._save_plot_to_cache()
         plt.show()
+        plt.close()
 
 
     # ==============================================================================
@@ -438,4 +442,24 @@ class Visualizer:
         self._save_plot_to_cache()
         plt.show()
         plt.close()
+
+    # ----------------------------------------------------------------------    
+    
+    def plot_elbow_curve(self, elbow_df: pd.DataFrame, dataset_label: str | None = None) -> None:
+        """Plot inertia vs. k (Elbow method)."""
+        if elbow_df.empty:
+            print("No elbow data to plot.")
+            return
+    
+        plt.figure(figsize=(8, 6))
+        plt.plot(elbow_df["k"], elbow_df["inertia"], marker="o")
+        title_prefix = f"{dataset_label}: " if dataset_label else ""
+        plt.title(f"{title_prefix}Elbow method for K-Means")
+        plt.xlabel("Number of clusters (k)")
+        plt.ylabel("Inertia (within-cluster SSE)")
+        plt.grid(True)
+        self._save_plot_to_cache()
+        plt.show()
+        plt.close()
+
     
