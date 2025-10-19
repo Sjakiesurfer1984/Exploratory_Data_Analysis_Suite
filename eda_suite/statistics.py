@@ -6,6 +6,7 @@ from sklearn.manifold import TSNE
 import pandas as pd
 import numpy as np
 from scipy import stats
+from sklearn.cluster import KMeans
 
 class StatisticsCalculator:
     
@@ -292,4 +293,23 @@ class StatisticsCalculator:
         embedding = reducer.fit_transform(numeric_df.values)
         colnames = ["UMAP1", "UMAP2"]
         return pd.DataFrame(embedding, columns=colnames, index=numeric_df.index)
+  
+    def compute_elbow_curve(X: np.ndarray, k_range: range = range(1, 11), random_state: int = 42) -> pd.DataFrame:
+        """
+        Compute K-Means inertia for different k values (Elbow method).
     
+        Args:
+            X (np.ndarray): Scaled feature matrix.
+            k_range (range): Range of cluster numbers to test.
+            random_state (int): For reproducibility.
+    
+        Returns:
+            pd.DataFrame: Table with k and inertia values.
+        """
+        results = []
+        for k in k_range:
+            kmeans = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+            kmeans.fit(X)
+            results.append({"k": k, "inertia": kmeans.inertia_})
+        return pd.DataFrame(results)
+
