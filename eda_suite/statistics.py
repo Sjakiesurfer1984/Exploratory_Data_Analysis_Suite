@@ -296,9 +296,7 @@ class StatisticsCalculator:
   
     # ----------------------------------------------------------------------
     # K-Means Elbow Curve
-    # ----------------------------------------------------------------------
-    from sklearn.cluster import KMeans
-    
+    # ----------------------------------------------------------------------  
     def compute_elbow_curve(
         self,
         X: np.ndarray,
@@ -323,5 +321,32 @@ class StatisticsCalculator:
             results.append({"k": k, "inertia": kmeans.inertia_})
         
         return pd.DataFrame(results)
+
+    # ----------------------------------------------------------------------
+    # Automatic elbow point detection (2nd derivative)
+    # ----------------------------------------------------------------------   
+    def elbow_by_second_diff(self, ks: list, inertia: list) -> int:
+        """
+        Automatically estimate the optimal number of clusters (k) 
+        using the 2nd derivative ('maximum curvature') method.
+    
+        Args:
+            ks (list): List or range of tested k values.
+            inertia (list): Corresponding inertia (within-cluster SSE) values.
+    
+        Returns:
+            int: Estimated optimal k value.
+        """
+        ks = np.asarray(ks)
+        I = np.asarray(inertia)
+    
+        # First and second discrete differences
+        d1 = I[:-1] - I[1:]
+        d2 = d1[:-1] - d1[1:]
+    
+        k_star = ks[1:-1][np.argmax(d2)]
+        print(f"Detected elbow (max curvature) at k = {int(k_star)}")
+        return int(k_star)
+
 
 
