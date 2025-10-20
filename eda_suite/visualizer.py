@@ -104,32 +104,58 @@ class Visualizer:
             plt.show()
             plt.close()
 
-    def plot_scatter(self, x_col: str, y_col: str, dataset_label: Optional[str] = None):
-        """Plot a scatter chart for two numerical variables."""
+    def plot_scatter(
+        self,
+        x_col: str,
+        y_col: str,
+        dataset_label: Optional[str] = None,
+        hue: Optional[str] = None,
+    ) -> None:
+        """
+        Plot a scatter chart for two numerical variables.
+        Optionally colour by a categorical or cluster variable.
+        """
         orig_x = self._schema.get_original_name(x_col)
         orig_y = self._schema.get_original_name(y_col)
         disp_x = self._schema.get_display_name(orig_x)
         disp_y = self._schema.get_display_name(orig_y)
-
-        plot_data = self._df[[orig_x, orig_y]].dropna()
+    
+        # Prepare data
+        plot_data = self._df[[orig_x, orig_y] + ([hue] if hue else [])].dropna()
         if plot_data.empty:
             print(f"Skipping plot: no overlapping data for '{disp_y}' vs. '{disp_x}'.")
             return
-
+    
         plt.figure(figsize=(10, 6))
-        sns.scatterplot(
-            data=plot_data,
-            x=orig_x,
-            y=orig_y,
-            s=30,
-            alpha=0.6,
-            color="red",
-        )
-
+    
+        # Use hue if provided, else plain scatter
+        if hue:
+            sns.scatterplot(
+                data=plot_data,
+                x=orig_x,
+                y=orig_y,
+                hue=hue,
+                palette="viridis",
+                s=50,
+                alpha=0.7,
+                edgecolor="k",
+            )
+        else:
+            sns.scatterplot(
+                data=plot_data,
+                x=orig_x,
+                y=orig_y,
+                s=30,
+                alpha=0.6,
+                color="red",
+            )
+    
         plt.title(self._format_title(dataset_label, f"{disp_y} vs {disp_x}"))
         plt.xlabel(disp_x)
         plt.ylabel(disp_y)
-
+        plt.legend(title=hue if hue else "", loc="best")
+        plt.grid(True)
+    
         self._save_plot_to_cache()
         plt.show()
         plt.close()
@@ -259,7 +285,6 @@ class Visualizer:
         self._save_plot_to_cache()
         plt.show()
         plt.close()
-
 
     def plot_covariance_heatmap(
         self,
