@@ -283,6 +283,29 @@ class EDAAnalyzer:
     # ==========================================================================
     # VISUALISER METHODS
     # ==========================================================================
+    def plot_bar(
+        self,
+        x_col: str,
+        y_col: Optional[str] = None,
+        hue: Optional[str] = None,
+        stacked: bool = False,
+        colormap: str = "viridis",
+        **kwargs
+    ) -> None:
+        """
+        High-level interface for bar or stacked bar charts.
+        Passes parameters to the Visualizer for plotting.
+        """
+        df = self._profiler.get_dataframe()
+        self._visualizer.plot_bar(
+            df=df,
+            x_col=x_col,
+            y_col=y_col,
+            hue=hue,
+            stacked=stacked,
+            colormap=colormap,
+            **kwargs
+        )
 
     def plot_distribution(self, column_names: Union[str, list[str]]) -> None:
         """Plot distributions (histogram or bar) for one or more columns."""
