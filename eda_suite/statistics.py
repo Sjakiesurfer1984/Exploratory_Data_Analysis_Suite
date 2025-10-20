@@ -348,5 +348,25 @@ class StatisticsCalculator:
         print(f"Detected elbow (max curvature) at k = {int(k_star)}")
         return int(k_star)
 
+    def compute_silhouette_scores(self, X, k_range=range(2, 11), random_state=42):
+        """
+        Computes average silhouette score for different cluster counts.
+
+        Args:
+            X (np.ndarray): Scaled feature matrix.
+            k_range (range): Range of k values to test.
+            random_state (int): For reproducibility.
+
+        Returns:
+            pd.DataFrame: DataFrame with k and silhouette scores.
+        """
+        scores = []
+        for k in k_range:
+            kmeans = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+            labels = kmeans.fit_predict(X)
+            score = silhouette_score(X, labels)
+            scores.append({"k": k, "silhouette_score": score})
+        return pd.DataFrame(scores)
+
 
 
