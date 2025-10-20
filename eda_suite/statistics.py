@@ -1,12 +1,13 @@
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.neighbors import NearestNeighbors
-from scipy.cluster.hierarchy import linkage
+from sklearn.neighbors import 
+from sklearn.cluster import KMeans, 
+from sklearn.metrics import silhouette_score
 from sklearn.manifold import TSNE
+from scipy.cluster.hierarchy import linkage
+from scipy import stats
 import pandas as pd
 import numpy as np
-from scipy import stats
-from sklearn.cluster import KMeans
 
 class StatisticsCalculator:
     
