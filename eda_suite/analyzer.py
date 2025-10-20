@@ -91,7 +91,9 @@ class EDAAnalyzer:
     # ==========================================================================
     # PROFILER METHODS
     # ==========================================================================
-
+    def get_dataframe(self) -> pd.DataFrame:
+        return self._profiler.get_dataframe()
+        
     def set_column_type(self, column: str, new_type: str) -> None:
         """
         Override the automatically inferred column type.
