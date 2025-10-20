@@ -287,10 +287,13 @@ class EDAAnalyzer:
         print(f"--- Plotting Distribution(s) {self.name}---")
         self._visualizer.plot_distribution(column_names, dataset_label=self.name)
 
-    def plot_scatter(self, x_col: str, y_col: str) -> None:
-        """Plot a scatter chart showing the relationship between two features."""
-        print(f"--- Plotting Scatter Plot {self.name}---")
-        self._visualizer.plot_scatter(x_col, y_col, dataset_label=self.name)
+    def plot_scatter(self, x_col: str, y_col: str, hue: Optional[str] = None) -> None:
+        """
+        Plot a scatter chart showing the relationship between two features.
+        Optionally colour points by a third variable (e.g., cluster label).
+        """
+        print(f"--- Plotting Scatter Plot ({self.name}) ---")
+        self._visualizer.plot_scatter(x_col, y_col, dataset_label=self.name, hue=hue)
 
     def plot_boxplots(
         self,
