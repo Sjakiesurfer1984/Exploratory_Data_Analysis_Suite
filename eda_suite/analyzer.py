@@ -404,7 +404,16 @@ class EDAAnalyzer:
         print(f"Suggested optimal number of clusters (via curvature): k = {optimal_k}")
     
         # Plot it
-        self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.name)
+        self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.name
+
+    def plot_silhouette(self, columns: list[str], k_range=range(2, 11)):
+        """
+        High-level method to compute and plot silhouette scores for different k.
+        """
+        print(f"--- Computing silhouette scores ({self.name}) ---")
+        X = self._profiler._df[columns].select_dtypes(include=["number"]).dropna().values
+        df_scores = self._stats.compute_silhouette_scores(X, k_range)
+        self._visualizer.plot_silhouette_scores(df_scores, dataset_label=self.name)
     
     # ==========================================================================
     # CLEANER METHODS
