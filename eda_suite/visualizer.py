@@ -462,4 +462,23 @@ class Visualizer:
         plt.show()
         plt.close()
 
+    # ----------------------------------------------------------------------    
+    
+    def plot_silhouette_scores(self, df_scores: pd.DataFrame, dataset_label: str = ""):
+        """
+        Plots silhouette scores versus number of clusters.
+
+        Args:
+            df_scores (pd.DataFrame): DataFrame with columns 'k' and 'silhouette_score'.
+            dataset_label (str): Optional label for title.
+        """
+        plt.figure(figsize=(8,6))
+        sns.lineplot(data=df_scores, x="k", y="silhouette_score", marker="o")
+        plt.title(f"{dataset_label}: Silhouette Scores for K-Means")
+        plt.xlabel("Number of clusters (k)")
+        plt.ylabel("Average silhouette score")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
     
