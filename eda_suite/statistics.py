@@ -1,7 +1,7 @@
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.neighbors import 
-from sklearn.cluster import KMeans, 
+from sklearn.neighbors import NearestNeighbors
+from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.manifold import TSNE
 from scipy.cluster.hierarchy import linkage
