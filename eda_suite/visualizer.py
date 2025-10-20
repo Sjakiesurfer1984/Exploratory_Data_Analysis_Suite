@@ -76,6 +76,52 @@ class Visualizer:
     # ==========================================================================
     # Core plotting functions
     # ==========================================================================
+    def plot_bar(
+        self,
+        x_col: str,
+        y_col: Optional[str] = None,
+        hue: Optional[str] = None,
+        stacked: bool = False,
+        colormap: str = "viridis",
+        figsize: Tuple[int, int] = (8,6),
+        **kwargs
+    ) -> None:
+        """
+        Create a bar or stacked bar chart from the DataFrame.
+    
+        Args:
+            x_col (str): Column to use for the x-axis.
+            y_col (Optional[str]): Column to use for the y-axis. 
+                If None, will use count aggregation.
+            hue (Optional[str]): Optional grouping column (e.g., clusters, regions).
+            stacked (bool): If True, produces a stacked bar chart.
+            colormap (str): Colour map for the bars.
+            figsize (Tuple[int, int]): Figure size in inches.
+        """
+        df = self._profiler.get_dataframe()
+    
+        if hue:
+            pivot = df.groupby([x_col, hue]).size().unstack(fill_value=0)
+            ax = pivot.plot(
+                kind="bar",
+                stacked=stacked,
+                figsize=figsize,
+                colormap=colormap,
+                **kwargs
+            )
+        else:
+            ax = df[x_col].value_counts().plot(
+                kind="bar",
+                stacked=stacked,
+                figsize=figsize,
+                colormap=colormap,
+                **kwargs
+            )
+    
+        plt.title(f"Bar plot for {x_col}" + (f" vs {hue}" if hue else ""))
+        plt.xlabel(x_col)
+        plt.ylabel("Count")
+        plt.show()
 
     def plot_distribution(self, columns: Union[str, List[str]], dataset_label: Optional[str] = None) -> None:
         """Plot distributions for numerical or categorical columns."""
