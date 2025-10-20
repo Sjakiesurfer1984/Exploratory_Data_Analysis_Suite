@@ -9,7 +9,6 @@
 # testable code.
 #
 # Author: Tim Vos
-# Last Modified: 2 October 2025
 # ==============================================================================
 
 from dependency_injector import containers, providers
