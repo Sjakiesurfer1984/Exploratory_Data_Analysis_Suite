@@ -407,7 +407,7 @@ class EDAAnalyzer:
         print(f"Suggested optimal number of clusters (via curvature): k = {optimal_k}")
     
         # Plot it
-        self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.name
+        self._visualizer.plot_elbow_curve(elbow_df, dataset_label=self.)
 
     def plot_silhouette(self, columns: list[str], k_range=range(2, 11)):
         """
