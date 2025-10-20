@@ -108,7 +108,10 @@ class DataProfiler:
             "categorical_columns (heuristic)": categorical_cols,
             "id_columns (heuristic)": id_cols,
         }
-
+        
+    def get_dataframe(self) -> pd.DataFrame:
+        return self._df.copy()
+    
     def get_missing_values(self) -> pd.DataFrame:
         """Calculates the count and percentage of missing values (NaNs) for each column."""
         # A standard, efficient pandas idiom to count nulls in each column.
