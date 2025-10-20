@@ -78,6 +78,7 @@ class Visualizer:
     # ==========================================================================
     def plot_bar(
         self,
+        df: pd.DataFrame,
         x_col: str,
         y_col: Optional[str] = None,
         hue: Optional[str] = None,
@@ -87,19 +88,17 @@ class Visualizer:
         **kwargs
     ) -> None:
         """
-        Create a bar or stacked bar chart from the DataFrame.
+        Create a bar or stacked bar chart from a DataFrame.
     
         Args:
+            df (pd.DataFrame): The dataset to visualise.
             x_col (str): Column to use for the x-axis.
-            y_col (Optional[str]): Column to use for the y-axis. 
-                If None, will use count aggregation.
-            hue (Optional[str]): Optional grouping column (e.g., clusters, regions).
+            y_col (Optional[str]): Column to use for the y-axis (unused if counting).
+            hue (Optional[str]): Grouping variable (e.g., Cluster or Region).
             stacked (bool): If True, produces a stacked bar chart.
             colormap (str): Colour map for the bars.
             figsize (Tuple[int, int]): Figure size in inches.
         """
-        df = self._profiler.get_dataframe()
-    
         if hue:
             pivot = df.groupby([x_col, hue]).size().unstack(fill_value=0)
             ax = pivot.plot(
@@ -121,6 +120,7 @@ class Visualizer:
         plt.title(f"Bar plot for {x_col}" + (f" vs {hue}" if hue else ""))
         plt.xlabel(x_col)
         plt.ylabel("Count")
+        plt.tight_layout()
         plt.show()
 
     def plot_distribution(self, columns: Union[str, List[str]], dataset_label: Optional[str] = None) -> None:
