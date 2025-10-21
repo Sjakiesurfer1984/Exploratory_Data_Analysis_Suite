@@ -445,7 +445,7 @@ class EDAAnalyzer:
         self._visualizer.plot_silhouette_scores(df_scores, dataset_label=self.name)
         max_idx = df_scores.idxmax()       # returns index (k) of max score
         max_val = df_scores.max()  
-        print(f"The maximum silhoutte score: {max_val} for k={max_idx})
+        print(f"The maximum silhoutte score: {max_val} for k={max_idx}")
     
     # ==========================================================================
     # CLEANER METHODS
