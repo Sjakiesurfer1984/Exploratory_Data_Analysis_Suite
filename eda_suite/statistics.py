@@ -367,10 +367,7 @@ class StatisticsCalculator:
             labels = kmeans.fit_predict(X)
             score = silhouette_score(X, labels)
             scores.append({"k": k, "silhouette_score": score})
-        df_scores = pd.DataFrame(scores)
-        k_best, max_score = df_scores.loc[df_scores["silhouette_score"].idxmax(), ["k", "silhouette"]]
-        print(f"Maximumn silhouette score for k={k_best}: {max_score:.3f}")
-        return df_scores
+        return  pd.DataFrame(scores)
 
 
 
