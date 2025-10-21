@@ -442,7 +442,7 @@ class EDAAnalyzer:
         print(f"--- Computing silhouette scores ({self.name}) ---")
         X = self._profiler._df[columns].select_dtypes(include=["number"]).dropna().values
         df_scores = self._stats.compute_silhouette_scores(X, k_range)
-        k_best, max_score = df_scores.loc[df_scores["silhouette_score"].idxmax(), ["k", "silhouette"]]
+        k_best, max_score = df_scores.loc[df_scores["silhouette_score"].idxmax(), ["k", "silhouette_score"]]
         print(f"Maximumn silhouette score for k={k_best}: {max_score:.3f}")
         self._visualizer.plot_silhouette_scores(df_scores, dataset_label=self.name)
     
