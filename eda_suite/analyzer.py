@@ -195,7 +195,7 @@ class EDAAnalyzer:
         """
         High-level interface to inspect imbalance in a categorical variable.
         """
-        summary = self.stats.class_distribution(self.df, column)
+        summary = self._stats.class_distribution(self.df, column)
         display(summary)
         self.vis.plot_class_distribution(self.df, column)
 
