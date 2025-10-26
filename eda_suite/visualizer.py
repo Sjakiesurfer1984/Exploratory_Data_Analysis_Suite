@@ -416,22 +416,22 @@ class Visualizer:
         plt.show()
         plt.close()
 
-        def plot_class_distribution(self, df: pd.DataFrame, column: str) -> None:
-        """
-        Displays a bar chart of category frequencies for imbalance analysis.
-        """
-        import matplotlib.pyplot as plt
-        import seaborn as sns
+    def plot_class_distribution(self, df: pd.DataFrame, column: str) -> None:
+    """
+    Displays a bar chart of category frequencies for imbalance analysis.
+    """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
 
-        plt.figure(figsize=(6, 4))
-        sns.countplot(x=column, data=df, palette="Set2",
-                      order=sorted(df[column].unique()))
-        plt.title(f"Class distribution for '{column}'", fontsize=13, pad=10)
-        plt.xlabel("Category")
-        plt.ylabel("Count")
-        plt.grid(axis="y", linestyle="--", alpha=0.5)
-        plt.tight_layout()
-        plt.show()
+    plt.figure(figsize=(6, 4))
+    sns.countplot(x=column, data=df, palette="Set2",
+                  order=sorted(df[column].unique()))
+    plt.title(f"Class distribution for '{column}'", fontsize=13, pad=10)
+    plt.xlabel("Category")
+    plt.ylabel("Count")
+    plt.grid(axis="y", linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.show()
 
     # ==============================================================================
     # Additional visualisation methods for PCA, t-SNE, UMAP, clustering
