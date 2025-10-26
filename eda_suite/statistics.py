@@ -369,5 +369,17 @@ class StatisticsCalculator:
             scores.append({"k": k, "silhouette_score": score})
         return  pd.DataFrame(scores)
 
+    def class_distribution(self, df: pd.DataFrame, column: str) -> pd.Series:
+        """
+        Computes raw counts and proportions for a categorical column.
+        Useful for identifying imbalanced categories during EDA.
+        """
+        counts = df[column].value_counts(dropna=False)
+        proportions = counts / counts.sum()
+        summary = pd.DataFrame({
+            "Count": counts,
+            "Proportion": proportions.round(4)
+        })
+        return summary
 
 
