@@ -194,10 +194,28 @@ class EDAAnalyzer:
     def show_class_balance(self, column: str) -> None:
         """
         High-level interface to inspect imbalance in a categorical variable.
+
+        This method delegates:
+        - data retrieval to the DataProfiler (via get_dataframe())
+        - computation to the StatisticsCalculator
+        - visualisation to the Visualizer
+
+        Args:
+            column (str): Name of the categorical column to analyse.
         """
-        summary = self._stats.class_distribution(self.df, column)
+        # Retrieve the active DataFrame from the profiler
+        df = self._profiler.get_dataframe()
+
+        # Compute and display counts and proportions
+        summary = self._stats.class_distribution(df, column)
+        print(f"--- Class Balance Summary ({self.name}) ---")
         display(summary)
-        self.vis.plot_class_distribution(self.df, column)
+
+        # Plot the class distribution using the Visualizer
+        print(f"\n--- Plotting Class Distribution for '{column}' ---")
+        self._visualizer.plot_class_distribution(df, column)
+        print("---------------------------------------------\n")
+
 
     # ==========================================================================
     # STATISTICS METHODS
