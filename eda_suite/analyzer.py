@@ -191,6 +191,14 @@ class EDAAnalyzer:
         display(outliers)
         print(outliers.shape)
 
+    def show_class_balance(self, column: str) -> None:
+        """
+        High-level interface to inspect imbalance in a categorical variable.
+        """
+        summary = self.stats.class_distribution(self.df, column)
+        display(summary)
+        self.vis.plot_class_distribution(self.df, column)
+
     # ==========================================================================
     # STATISTICS METHODS
     # ==========================================================================
